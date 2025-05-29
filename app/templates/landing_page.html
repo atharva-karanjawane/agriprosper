@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Agri Prosper - Smart Greenhouse Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        /* Base Variables and Settings */
+        :root {
+            --primary-color: #16a34a;
+            --primary-dark: #15803d;
+            --secondary-green: #22c55e;
+            --tertiary-green: #bbf7d0;
+            --header-height: 70px;
+            --mobile-header-height: 60px;
+        }
+
+        /* Global Styles */
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Mobile-first Media Queries */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 768px) {
+            .container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+        }
+
+        /* Modern Gradient Backgrounds */
+        .hero-gradient {
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 50%, #22c55e 100%);
+            position: relative;
+        }
+
+        .hero-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+
+        /* Modern Card Styles with Mobile Optimization */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @media (hover: hover) {
+            .glass-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
+            }
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(34, 197, 94, 0.1);
+            overflow: hidden;
+        }
+
+        @media (hover: hover) {
+            .feature-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+            }
+
+            .feature-card:hover .feature-icon {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) {
+            .feature-card:active {
+                transform: scale(0.98);
+            }
+        }
+
+        .feature-icon {
+            transition: all 0.4s ease;
+        }
+
+        /* Modern Button Styles with Mobile Optimization */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-green) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        @media (max-width: 640px) {
+            .btn-primary {
+                padding: 0.875rem 1.75rem;
+                font-size: 0.9375rem;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary-green) 0%, var(--primary-color) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        @media (hover: hover) {
+            .btn-primary:hover::before {
+                opacity: 1;
+            }
+        }
+
+        .btn-primary span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        @media (max-width: 640px) {
+            .btn-outline {
+                padding: 0.875rem 1.75rem;
+                font-size: 0.9375rem;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (hover: hover) {
+            .btn-outline:hover {
+                background: white;
+                color: var(--primary-color);
+                transform: translateY(-2px);
+            }
+        }
+        /* Animated Elements with Mobile Optimization */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .floating {
+                animation: none;
+            }
+        }
+
+        @keyframes floating {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 15px); }
+            100% { transform: translate(0, -0px); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+            will-change: transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pulse {
+                animation: none;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Modern Navigation with Mobile Optimization */
+        .nav-fixed {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        @media (hover: hover) {
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 2px;
+                background: var(--primary-color);
+                transition: all 0.3s ease;
+            }
+
+            .nav-link:hover::after {
+                width: 80%;
+            }
+        }
+
+        /* Mobile Menu Optimizations */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 2.5rem;
+                line-height: 1.2;
+            }
+
+            h2 {
+                font-size: 2rem;
+                line-height: 1.3;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+                line-height: 1.4;
+            }
+
+            p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+            h1 {
+                font-size: 3rem;
+                line-height: 1.2;
+            }
+
+            h2 {
+                font-size: 2.25rem;
+                line-height: 1.3;
+            }
+
+            h3 {
+                font-size: 1.75rem;
+                line-height: 1.4;
+            }
+
+            p {
+                font-size: 1.125rem;
+                line-height: 1.6;
+            }
+        }
+
+        /* Grid Layout Optimizations */
+        .grid-container {
+            display: grid;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        @media (max-width: 640px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Touch-friendly Interactive Elements */
+        .interactive-element {
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            min-height: 44px; /* Minimum touch target size */
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Optimized Images */
+        .responsive-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        /* Loading States */
+        .skeleton-loading {
+            background: linear-gradient(
+                90deg,
+                rgba(190, 190, 190, 0.2) 25%,
+                rgba(129, 129, 129, 0.24) 37%,
+                rgba(190, 190, 190, 0.2) 63%
+            );
+            background-size: 400% 100%;
+            animation: skeleton-loading 1.4s ease infinite;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0 50%;
+            }
+        }
+
+        /* Scroll Optimizations */
+        .smooth-scroll {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Form Elements Optimization */
+        .form-input {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-input {
+                font-size: 16px; /* Prevent iOS zoom on focus */
+            }
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        /* Modal Optimizations */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Performance Optimizations */
+        .hardware-accelerated {
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Loading Bar -->
+    <div class="loading-bar hardware-accelerated"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white bg-opacity-90 nav-fixed">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-leaf text-xl sm:text-2xl text-white"></i>
+                    </div>
+                    <span class="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-400">
+                        Agri Prosper
+                    </span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                    <a href="#features" class="nav-link text-gray-600 hover:text-green-600">Features</a>
+                    <a href="#benefits" class="nav-link text-gray-600 hover:text-green-600">Benefits</a>
+                    <a href="#testimonials" class="nav-link text-gray-600 hover:text-green-600">Testimonials</a>
+                    <a href="{{ url_for('login') }}" class="btn-primary">
+                        <span>Login</span>
+                    </a>
+                </div>
+
+                <button class="md:hidden interactive-element text-gray-600 focus:outline-none" aria-label="Menu">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed inset-0 bg-white z-50 md:hidden">
+        <div class="p-4">
+            <button class="absolute top-4 right-4 text-gray-600" aria-label="Close menu">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div class="flex flex-col space-y-4 mt-12">
+                <a href="#features" class="text-lg text-gray-600 hover:text-green-600 py-2">Features</a>
+                <a href="#benefits" class="text-lg text-gray-600 hover:text-green-600 py-2">Benefits</a>
+                <a href="#testimonials" class="text-lg text-gray-600 hover:text-green-600 py-2">Testimonials</a>
+                <a href="{{ url_for('login') }}" class="btn-primary text-center mt-4">
+                    <span>Login Now</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-16 -left-16 w-64 h-64 bg-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+            <div class="absolute -bottom-8 -right-8 w-64 h-64 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+                <!-- Hero Content -->
+                <div class="flex-1 text-center lg:text-left">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6" data-aos="fade-up">
+                        Smart Greenhouse Management Made Simple
+                    </h1>
+                    <p class="text-lg md:text-xl text-white/90 mb-8 max-w-2xl" data-aos="fade-up" data-aos-delay="100">
+                        Transform your greenhouse into a high-tech farming paradise. Monitor, control, and optimize your crops with real-time insights and automated systems.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4" data-aos="fade-up" data-aos-delay="200">
+                        <a href="{{ url_for('login') }}" class="btn-primary">
+                            <span>Get Started Now</span>
+                        </a>
+                        <a href="#features" class="btn-outline">
+                            <span>Learn More</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Image -->
+                <div class="flex-1 relative" data-aos="fade-left">
+                    <div class="relative w-full max-w-2xl mx-auto">
+                        <div class="aspect-w-16 aspect-h-9 relative z-10">
+                            <img src="../static/greenhouse.png" alt="Dashboard Preview" class="rounded-2xl shadow-2xl floating">
+                        </div>
+                        <!-- Decorative Elements -->
+                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-green-400 rounded-full mix-blend-multiply filter blur-lg opacity-90"></div>
+                        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-green-500 rounded-full mix-blend-multiply filter blur-lg opacity-90"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-aos="fade-up" data-aos-delay="300">
+                <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white mb-2">95%</div>
+                    <div class="text-white/90">Crop Yield Increase</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white mb-2">40%</div>
+                    <div class="text-white/90">Water Savings</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white mb-2">24/7</div>
+                    <div class="text-white/90">Monitoring</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white mb-2">1000+</div>
+                    <div class="text-white/90">Happy Farmers</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4" data-aos="fade-up">
+                    Powerful Features for Modern Farming
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                    Everything you need to manage your greenhouse efficiently and boost your productivity
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature Card 1 -->
+                <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-temperature-high text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Climate Control</h3>
+                    <p class="text-gray-600">Real-time monitoring and automatic adjustment of temperature, humidity, and ventilation</p>
+                </div>
+
+                <!-- Feature Card 2 -->
+                <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-tint text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Smart Irrigation</h3>
+                    <p class="text-gray-600">Automated watering systems based on soil moisture levels and plant needs</p>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Yield Analytics</h3>
+                    <p class="text-gray-600">Detailed insights and predictions to maximize your crop production</p>
+                </div>
+                <!-- Feature Card 4 -->
+                <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="500">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-bug-slash text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Pest Detection</h3>
+                    <p class="text-gray-600">Early warning system for pest infestations and automated treatment recommendations</p>
+                </div>
+
+                <!-- Feature Card 5 -->
+                <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="600">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-language text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Vernacular Support</h3>
+                    <p class="text-gray-600">Multi-language interface and voice alerts in your preferred local language</p>
+                </div>
+
+                <!-- Feature Card 6 -->
+                <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="700">
+                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-coins text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Financial Tracking</h3>
+                    <p class="text-gray-600">Complete cost management and ROI analysis for your greenhouse operations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="py-20 bg-green-50">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4" data-aos="fade-up">
+                    Why Choose Agri Prosper?
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                    Experience the future of greenhouse farming with our cutting-edge technology
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Benefits Content -->
+                <div class="space-y-8">
+                    <div class="flex items-start space-x-4" data-aos="fade-right">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Increased Productivity</h3>
+                            <p class="text-gray-600">Optimize your greenhouse operations with AI-driven insights and automated controls</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4" data-aos="fade-right" data-aos-delay="100">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-water text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Resource Efficiency</h3>
+                            <p class="text-gray-600">Save water and energy with smart resource management and optimization</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4" data-aos="fade-right" data-aos-delay="200">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Risk Prevention</h3>
+                            <p class="text-gray-600">Prevent crop losses with early warning systems and proactive monitoring</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4" data-aos="fade-right" data-aos-delay="300">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-mobile-alt text-xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Remote Access</h3>
+                            <p class="text-gray-600">Monitor and control your greenhouse from anywhere, anytime</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefits Image -->
+                <div class="relative" data-aos="fade-left">
+                    <div class="relative rounded-2xl overflow-hidden shadow-xl">
+                        <img src="https://placehold.co/600x400" alt="Greenhouse Benefits" class="w-full h-auto">
+                        <!-- Overlay with Icons -->
+                        <div class="absolute inset-0 bg-gradient-to-tr from-green-600/80 to-transparent flex items-center justify-center">
+                            <div class="grid grid-cols-2 gap-8 p-8">
+                                <div class="text-center text-white">
+                                    <i class="fas fa-leaf text-4xl mb-4"></i>
+                                    <p class="font-semibold">Sustainable</p>
+                                </div>
+                                <div class="text-center text-white">
+                                    <i class="fas fa-tachometer-alt text-4xl mb-4"></i>
+                                    <p class="font-semibold">Efficient</p>
+                                </div>
+                                <div class="text-center text-white">
+                                    <i class="fas fa-brain text-4xl mb-4"></i>
+                                    <p class="font-semibold">Smart</p>
+                                </div>
+                                <div class="text-center text-white">
+                                    <i class="fas fa-chart-bar text-4xl mb-4"></i>
+                                    <p class="font-semibold">Profitable</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative Elements -->
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                    <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4" data-aos="fade-up">
+                    What Our Farmers Say
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                    Join hundreds of satisfied farmers who have transformed their greenhouse operations
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-2xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900">Rajesh Kumar</h4>
+                            <p class="text-gray-600">Tomato Farmer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        "Since implementing Agri Prosper, my crop yield has increased by 40%. The vernacular support makes it easy to understand and use."
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-2xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900">Priya Patel</h4>
+                            <p class="text-gray-600">Flower Cultivator</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        "The automated climate control and pest detection features have saved my flowers multiple times. Worth every penny!"
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100" data-aos="fade-up" data-aos-delay="400">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-2xl text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900">Mohammed Ali</h4>
+                            <p class="text-gray-600">Vegetable Grower</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        "The ROI tracking and cost management features helped me optimize my operations and increase profits significantly."
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-br from-green-600 to-green-400 relative overflow-hidden">
+        <!-- Decorative Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute -top-8 -right-8 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
+            <div class="absolute -bottom-8 -left-8 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6" data-aos="fade-up">
+                    Ready to Transform Your Greenhouse?
+                </h2>
+                <p class="text-xl text-white/90 mb-8" data-aos="fade-up" data-aos-delay="100">
+                    Join thousands of successful farmers who have already modernized their farming practices with Agri Prosper
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                    <a href="{{ url_for('login') }}" class="btn-primary bg-white text-green-600 hover:bg-green-50">
+                        <span>Get Started Now</span>
+                    </a>
+                    <a href="#features" class="btn-outline">
+                        <span>Learn More</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-leaf text-xl text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">Agri Prosper</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Transforming greenhouse farming with smart technology and sustainable solutions.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/atharva-karanjawane-7ba836262/" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Quick Links</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#benefits" class="text-gray-400 hover:text-white transition-colors">Benefits</a></li>
+                        <li><a href="#testimonials" class="text-gray-400 hover:text-white transition-colors">Testimonials</a></li>
+                        <li><a href="{{ url_for('login') }}" class="text-gray-400 hover:text-white transition-colors">Login</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt w-6"></i>
+                            <span>Pune - 411043</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone w-6"></i>
+                            <span>+91 8830026811</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope w-6"></i>
+                            <span>23148003@pvgcoet.ac.in</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Newsletter</h4>
+                    <p class="text-gray-400 mb-4">
+                        Subscribe to our newsletter for updates and farming tips.
+                    </p>
+                    <form class="space-y-4">
+                        <input type="email" placeholder="Your email" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-green-500">
+                        <button type="submit" class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Agri Prosper. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize AOS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true,
+                mirror: false
+            });
+
+            // Mobile Menu Toggle
+            const menuButton = document.querySelector('[aria-label="Menu"]');
+            const closeButton = document.querySelector('[aria-label="Close menu"]');
+            const mobileMenu = document.querySelector('.mobile-menu');
+
+            menuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+            });
+
+            closeButton.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+
+{% block title %}Controls - Agri Prosper{% endblock %}
+
+{% block extra_css %}
+<style>
+    .control-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .control-card:hover {
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.08);
+    }
+
+    /* Modern Switch Styles */
+    .switch-container {
+        position: relative;
+        width: 50px;
+        height: 26px;
+    }
+
+    .switch-input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e5e7eb;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .switch-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    .switch-input:checked + .switch-slider {
+        background-color: var(--primary-color);
+    }
+
+    .switch-input:checked + .switch-slider:before {
+        transform: translateX(24px);
+    }
+
+    /* Slider Controls */
+    .slider-control {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 5px;
+        background: #e5e7eb;
+        outline: none;
+    }
+
+    .slider-control::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 0 0 1px var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .slider-control::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+    }
+
+    /* Schedule Timeline */
+    .timeline {
+        display: grid;
+        grid-template-columns: repeat(24, 1fr);
+        gap: 4px;
+        padding: 10px 0;
+    }
+
+    .timeline-hour {
+        height: 40px;
+        background: #f8fafc;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .timeline-hour:hover {
+        background: rgba(34, 197, 94, 0.1);
+    }
+
+    .timeline-hour.active {
+        background: var(--primary-color);
+    }
+
+    /* Status Indicators */
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+    .status-active {
+        background: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+    }
+
+    .status-inactive {
+        background: #e5e7eb;
+    }
+
+    /* Zone Selection */
+    .zone-selector {
+        display: inline-flex;
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .zone-option {
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .zone-option.active {
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Animation for status changes */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .status-change {
+        animation: pulse 0.5s ease;
+    }
+
+    /* Quick Action Buttons */
+    .quick-action {
+        background: white;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .quick-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.08);
+    }
+
+    .quick-action.active {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: var(--primary-color);
+    }
+
+    /* Automation Rule Card */
+    .rule-card {
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .rule-card:hover {
+        transform: translateX(4px);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800">Greenhouse Controls</h1>
+            <p class="text-gray-600 mt-1">Manage your greenhouse environment and automation</p>
+        </div>
+        <div class="zone-selector">
+            <button class="zone-option active">Zone A</button>
+            <button class="zone-option">Zone B</button>
+            <button class="zone-option">Zone C</button>
+            <button class="zone-option">All Zones</button>
+        </div>
+    </div>
+
+    <!-- Quick Controls Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Temperature Control -->
+        <div class="control-card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-temperature-half text-green-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-700">Temperature</h3>
+                </div>
+                <div class="switch-container">
+                    <input type="checkbox" class="switch-input" id="tempControl" checked>
+                    <label class="switch-slider" for="tempControl"></label>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Current: 24.5°C</span>
+                    <span>Target: 25°C</span>
+                </div>
+                <input type="range" class="slider-control" min="15" max="35" value="25">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>15°C</span>
+                    <span>35°C</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Humidity Control -->
+        <div class="control-card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-droplet text-blue-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-700">Humidity</h3>
+                </div>
+                <div class="switch-container">
+                    <input type="checkbox" class="switch-input" id="humidityControl" checked>
+                    <label class="switch-slider" for="humidityControl"></label>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Current: 65%</span>
+                    <span>Target: 70%</span>
+                </div>
+                <input type="range" class="slider-control" min="40" max="90" value="70">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>40%</span>
+                    <span>90%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Irrigation Control -->
+        <div class="control-card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-faucet text-cyan-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-700">Irrigation</h3>
+                </div>
+                <div class="switch-container">
+                    <input type="checkbox" class="switch-input" id="irrigationControl">
+                    <label class="switch-slider" for="irrigationControl"></label>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Last: 2h ago</span>
+                    <span>Next: 4h</span>
+                </div>
+                <input type="range" class="slider-control" min="0" max="100" value="60">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>Flow Rate</span>
+                    <span>2.4 L/min</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lighting Control -->
+        <div class="control-card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-sun text-yellow-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-700">Lighting</h3>
+                </div>
+                <div class="switch-container">
+                    <input type="checkbox" class="switch-input" id="lightingControl" checked>
+                    <label class="switch-slider" for="lightingControl"></label>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Intensity: 80%</span>
+                    <span>Mode: Auto</span>
+                </div>
+                <input type="range" class="slider-control" min="0" max="100" value="80">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>0%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Automation Rules -->
+    <div class="control-card p-6">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">Automation Rules</h2>
+                <p class="text-gray-600 text-sm mt-1">Configure smart controls for your greenhouse</p>
+            </div>
+            <button class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                <span>New Rule</span>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <!-- Rule 1 -->
+            <div class="rule-card p-4 bg-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="status-indicator status-active"></div>
+                        <h4 class="font-medium text-gray-800">Temperature Control</h4>
+                    </div>
+                    <div class="switch-container">
+                        <input type="checkbox" class="switch-input" id="rule1" checked>
+                        <label class="switch-slider" for="rule1"></label>
+                    </div>
+                </div>
+                <div class="mt-3 text-sm text-gray-600">
+                    If temperature > 28°C, activate cooling system
+                </div>
+                <div class="mt-2 flex items-center text-xs text-gray-500">
+                    <i class="fas fa-clock mr-1"></i>
+                    <span>Active: 24/7</span>
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-bolt mr-1"></i>
+                    <span>Last triggered: 2h ago</span>
+                </div>
+            </div>
+
+            <!-- Rule 2 -->
+            <div class="rule-card p-4 bg-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="status-indicator status-active"></div>
+                        <h4 class="font-medium text-gray-800">Smart Irrigation</h4>
+                    </div>
+                    <div class="switch-container">
+                        <input type="checkbox" class="switch-input" id="rule2" checked>
+                        <label class="switch-slider" for="rule2"></label>
+                    </div>
+                </div>
+                <div class="mt-3 text-sm text-gray-600">
+                    If soil moisture < 40%, start irrigation for 10 minutes
+                </div>
+                <div class="mt-2 flex items-center text-xs text-gray-500">
+                    <i class="fas fa-clock mr-1"></i>
+                    <span>Active: 6:00 AM - 6:00 PM</span>
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-bolt mr-1"></i>
+                    <span>Last triggered: 5h ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Control -->
+    <div class="control-card p-6">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">Daily Schedule</h2>
+                <p class="text-gray-600 text-sm mt-1">Configure timing for automated tasks</p>
+            </div>
+            <div class="flex space-x-2">
+                <button class="btn btn-outline">
+                    <i class="fas fa-copy"></i>
+                    <span>Copy Schedule</span>
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Task</span>
+                </button>
+            </div>
+        </div>
+        <div class="space-y-6">
+            <!-- Timeline -->
+            <div class="timeline">
+                {% for hour in range(24) %}
+                <div class="timeline-hour {% if hour >= 6 and hour <= 18 %}active{% endif %}"
+                     title="{{ '%02d:00'|format(hour) }}"></div>
+                {% endfor %}
+            </div>
+            <!-- Schedule Legend -->
+            <div class="flex space-x-6 text-sm">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-green-600 rounded mr-2"></div>
+                    <span>Active Hours</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-gray-200 rounded mr-2"></div>
+                    <span>Inactive Hours</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize all switches
+    document.querySelectorAll('.switch-input').forEach(switchInput => {
+        switchInput.addEventListener('change', function() {
+            const card = this.closest('.control-card, .rule-card');
+            if (card) {
+                card.classList.add('status-change');
+                setTimeout(() => card.classList.remove('status-change'), 500);
+            }
+        });
+    });
+
+    // Initialize all sliders
+    document.querySelectorAll('.slider-control').forEach(slider => {
+        slider.addEventListener('input', function() {
+            const valueDisplay = this.closest('.space-y-4').querySelector('.flex.justify-between span:last-child');
+            if (valueDisplay) {
+                if (this.id === 'tempSlider') {
+                    valueDisplay.textContent = `${this.value}°C`;
+                } else if (this.id === 'humiditySlider') {
+                    valueDisplay.textContent = `${this.value}%`;
+                }
+            }
+        });
+    });
+
+    // Zone selector functionality
+    document.querySelectorAll('.zone-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.zone-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Timeline hour selection
+    document.querySelectorAll('.timeline-hour').forEach(hour => {
+        hour.addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+    });
+
+    // Simulate real-time updates
+    function updateMetrics() {
+        const metrics = {
+            temperature: {
+                current: 24.5 + (Math.random() - 0.5),
+                target: 25
+            },
+            humidity: {
+                current: 65 + (Math.random() - 0.5) * 2,
+                target: 70
+            },
+            irrigation: {
+                flowRate: 2.4 + (Math.random() - 0.5) * 0.2
+            },
+            lighting: {
+                intensity: 80 + (Math.random() - 0.5) * 2
+            }
+        };
+
+        // Update temperature display
+        document.querySelector('.control-card:nth-child(1) .text-sm.text-gray-600 span:first-child')
+            .textContent = `Current: ${metrics.temperature.current.toFixed(1)}°C`;
+
+        // Update humidity display
+        document.querySelector('.control-card:nth-child(2) .text-sm.text-gray-600 span:first-child')
+            .textContent = `Current: ${metrics.humidity.current.toFixed(1)}%`;
+
+        // Update irrigation display
+        document.querySelector('.control-card:nth-child(3) .text-xs.text-gray-500 span:last-child')
+            .textContent = `${metrics.irrigation.flowRate.toFixed(1)} L/min`;
+
+        // Update lighting display
+        document.querySelector('.control-card:nth-child(4) .text-sm.text-gray-600 span:first-child')
+            .textContent = `Intensity: ${Math.round(metrics.lighting.intensity)}%`;
+    }
+
+    // Update metrics every 3 seconds
+    setInterval(updateMetrics, 3000);
+</script>
+{% endblock %}
