@@ -151,8 +151,8 @@
                     <div id="diseaseDetails"></div>
                 </div>
             </div>
-
-            <!-- Crop Quality Test -->
+            
+            <!-- Crop Quality Card - Fixed structure -->
             <div class="prediction-card p-6">
                 <div class="flex items-center mb-4">
                     <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -162,25 +162,115 @@
                 </div>
 
                 <form id="qualityForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Crop Type</label>
-                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            <option>Tomato</option>
-                            <option>Lettuce</option>
-                            <option>Cucumber</option>
-                            <option>Basil</option>
-                            <option>Spinach</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Crop Type</label>
+                            <select id="crop" name="crop" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                <option value="TOMATO">Tomato</option>
+                                <option value="LETTUCE">Lettuce</option>
+                                <option value="CUCUMBER">Cucumber</option>
+                                <option value="BASIL">Basil</option>
+                                <option value="SPINACH">Spinach</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Growth Stage</label>
+                            <select id="growth_stage" name="growth_stage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                <option value="GERMINATION">Germination</option>
+                                <option value="VEGETATIVE">Vegetative</option>
+                                <option value="FLOWERING">Flowering</option>
+                                <option value="FRUITING">Fruiting</option>
+                            </select>
+                        </div>
                     </div>
-
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Temperature (°C)</label>
+                            <input type="number" id="temperature" name="temperature" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="24" min="15" max="35" step="0.1" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Humidity (%)</label>
+                            <input type="number" id="humidity" name="humidity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="65" min="30" max="90" step="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">CO2 Level (ppm)</label>
+                            <input type="number" id="co2_level" name="co2_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="800" min="350" max="2000" step="10" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">PPFD (μmol/m²/s)</label>
+                            <input type="number" id="ppfd" name="ppfd" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="300" min="100" max="1000" step="10" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">pH Level</label>
+                            <input type="number" id="ph" name="ph" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="6.0" min="5.0" max="7.5" step="0.1" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">EC (mS/cm)</label>
+                            <input type="number" id="ec" name="ec" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="1.8" min="0.5" max="3.5" step="0.1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Leaf Color Index (0-1)</label>
+                            <input type="number" id="leaf_color_index" name="leaf_color_index" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="0.8" min="0" max="1" step="0.1" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Stem Thickness (mm)</label>
+                            <input type="number" id="stem_thickness" name="stem_thickness" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="8" min="1" max="25" step="0.5" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Plant Height (cm)</label>
+                            <input type="number" id="plant_height" name="plant_height" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="45" min="5" max="200" step="1" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Days Since Planting</label>
+                            <input type="number" id="days_since_planting" name="days_since_planting" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="30" min="1" max="150" step="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nitrogen Level (0-1)</label>
+                            <input type="number" id="nitrogen_level" name="nitrogen_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="0.7" min="0" max="1" step="0.1" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Phosphorus Level (0-1)</label>
+                            <input type="number" id="phosphorus_level" name="phosphorus_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="0.6" min="0" max="1" step="0.1" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Potassium Level (0-1)</label>
+                            <input type="number" id="potassium_level" name="potassium_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                value="0.6" min="0" max="1" step="0.1" required>
+                        </div>
+                    </div>
+                    
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Growth Stage</label>
-                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                            <option>Germination</option>
-                            <option>Vegetative</option>
-                            <option>Flowering</option>
-                            <option>Fruiting</option>
-                        </select>
+                        <label class="block text-sm font-medium text-gray-700">Water TDS (ppm)</label>
+                        <input type="number" id="water_tds" name="water_tds" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                            value="450" min="100" max="1500" step="10" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-full">
@@ -189,13 +279,14 @@
                 </form>
 
                 <div id="qualityResult" class="result-card mt-4 hidden">
-                    <div class="health-indicator health-good mb-4">95%</div>
-                    <h4 class="font-semibold text-gray-800 mb-2 text-center">Excellent Quality</h4>
-                    <ul class="text-sm text-gray-600 space-y-2">
-                        <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Optimal growth rate</li>
-                        <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Healthy nutrient levels</li>
-                        <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Good color and texture</li>
-                    </ul>
+                    <div id="qualityIndicator" class="health-indicator health-good mb-4">0.0</div>
+                    <h4 id="qualityCategory" class="font-semibold text-gray-800 mb-2 text-center">Analyzing...</h4>
+                    <div class="mt-4">
+                        <h5 class="font-medium text-gray-700 mb-2">Recommendations:</h5>
+                        <ul id="qualityRecommendations" class="text-sm text-gray-600 space-y-2">
+                            <!-- Recommendations will be added here -->
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -248,6 +339,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Crop Yield Predictor -->
         <div class="prediction-card p-6">
             <div class="flex items-center mb-4">
@@ -462,6 +554,7 @@
     </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
 // Disease Detection
@@ -826,6 +919,99 @@ document.getElementById('yieldForm').addEventListener('submit', async (e) => {
         // Reset button state
         submitButton.disabled = false;
         submitButton.textContent = 'Predict Yield';
+    }
+});
+
+// Crop Quality Prediction
+document.getElementById('qualityForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const qualityResult = document.getElementById('qualityResult');
+    const qualityIndicator = document.getElementById('qualityIndicator');
+    const qualityCategory = document.getElementById('qualityCategory');
+    const qualityRecommendations = document.getElementById('qualityRecommendations');
+    
+    // Show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            Analyzing...
+        </div>
+    `;
+    
+    // Collect form data
+    const formData = {
+        crop: document.getElementById('crop').value,
+        growth_stage: document.getElementById('growth_stage').value,
+        temperature: parseFloat(document.getElementById('temperature').value),
+        humidity: parseFloat(document.getElementById('humidity').value),
+        co2_level: parseFloat(document.getElementById('co2_level').value),
+        ppfd: parseFloat(document.getElementById('ppfd').value),
+        ph: parseFloat(document.getElementById('ph').value),
+        ec: parseFloat(document.getElementById('ec').value),
+        leaf_color_index: parseFloat(document.getElementById('leaf_color_index').value),
+        stem_thickness: parseFloat(document.getElementById('stem_thickness').value),
+        plant_height: parseFloat(document.getElementById('plant_height').value),
+        days_since_planting: parseInt(document.getElementById('days_since_planting').value),
+        nitrogen_level: parseFloat(document.getElementById('nitrogen_level').value),
+        phosphorus_level: parseFloat(document.getElementById('phosphorus_level').value),
+        potassium_level: parseFloat(document.getElementById('potassium_level').value),
+        water_tds: parseFloat(document.getElementById('water_tds').value)
+    };
+
+    try {
+        console.log('Sending request:', formData);
+        
+        const response = await fetch('http://localhost:8000/api/predict-quality', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Received response:', data);
+        
+        // Update UI with results
+        qualityIndicator.textContent = data.quality_score.toFixed(1);
+        qualityCategory.textContent = data.quality_category;
+        
+        // Update health indicator color based on quality score
+        qualityIndicator.className = 'health-indicator';
+        if (data.quality_score >= 8) {
+            qualityIndicator.classList.add('health-good');
+        } else if (data.quality_score >= 6) {
+            qualityIndicator.classList.add('health-warning');
+        } else {
+            qualityIndicator.classList.add('health-critical');
+        }
+        
+        // Display recommendations
+        qualityRecommendations.innerHTML = '';
+        data.recommendations.forEach(recommendation => {
+            const li = document.createElement('li');
+            li.innerHTML = `<i class="fas fa-check-circle text-green-600 mr-2"></i>${recommendation}`;
+            qualityRecommendations.appendChild(li);
+        });
+        
+        // Show results
+        qualityResult.classList.remove('hidden');
+        qualityResult.scrollIntoView({ behavior: 'smooth' });
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error analyzing crop quality. Please try again.');
+    } finally {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = 'Analyze Quality';
     }
 });
 </script>

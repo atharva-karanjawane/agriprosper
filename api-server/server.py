@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware 
 from fastapi.staticfiles import StaticFiles
@@ -15,9 +15,14 @@ from inference_sdk import InferenceHTTPClient
 import cv2
 import numpy as np
 import pandas as pd
-
+import joblib 
+from enum import Enum
+from crop_quality import predict_quality
 with open('crop_yield_model.pkl', 'rb') as f:
     model, feature_names = pickle.load(f)
+
+quality_model = joblib.load('crop_quality_model.pkl')
+scaler = joblib.load('quality_scaler.pkl')
 
 class StageData(BaseModel):
     temperature: float = Field(..., ge=18, le=30, description="Temperature in Celsius")
@@ -126,6 +131,30 @@ class MaintenancePrediction(BaseModel):
     recommended_date: str
     issues: List[str]
     health_score: float
+
+class QualityPredictionInput(BaseModel):
+    crop: str = Field(..., description="Crop type (e.g., TOMATO, LETTUCE, CUCUMBER, BASIL, SPINACH)")
+    growth_stage: str = Field(..., description="Growth stage (e.g., GERMINATION, VEGETATIVE, FLOWERING, FRUITING)")
+    temperature: float = Field(..., description="Temperature in Celsius")
+    humidity: float = Field(..., description="Relative humidity percentage")
+    co2_level: float = Field(..., description="CO2 level in ppm")
+    ppfd: float = Field(..., description="Photosynthetic Photon Flux Density in μmol/m²/s")
+    ph: float = Field(..., description="pH level of nutrient solution")
+    ec: float = Field(..., description="Electrical Conductivity in mS/cm")
+    leaf_color_index: float = Field(..., description="Leaf color index (0-1)")
+    stem_thickness: float = Field(..., description="Stem thickness in mm")
+    plant_height: float = Field(..., description="Plant height in cm")
+    days_since_planting: int = Field(..., description="Days since planting")
+    nitrogen_level: float = Field(..., description="Nitrogen level (0-1)")
+    phosphorus_level: float = Field(..., description="Phosphorus level (0-1)")
+    potassium_level: float = Field(..., description="Potassium level (0-1)")
+    water_tds: float = Field(..., description="Water Total Dissolved Solids in ppm")
+
+class QualityPredictionOutput(BaseModel):
+    quality_score: float = Field(..., description="Quality score (0-10)")
+    quality_category: str = Field(..., description="Quality category (Poor, Fair, Good, Very Good, Excellent)")
+    recommendations: List[str] = Field(..., description="List of recommendations to improve quality")
+
 
 app = FastAPI(
     title="Plant Disease Detection API",
@@ -301,6 +330,27 @@ async def predict_maintenance(data: MaintenanceData):
         issues=issues,
         health_score=round(health_score, 2)
     )
+
+@app.post("/api/predict-quality", response_model=QualityPredictionOutput)
+async def predict_crop_quality(input_data: QualityPredictionInput):
+    """
+    Predict crop quality based on provided parameters.
+    
+    Returns quality score, category, and recommendations for improvement.
+    """
+    try:
+        # Convert Pydantic model to dict
+        input_dict = input_data.dict()
+        
+        # Make prediction using the imported function
+        result = predict_quality(input_dict)
+        # Check if there was an error
+        if "error" in result and result["quality_category"] == "Error":
+            raise HTTPException(status_code=400, detail=result["error"])
+            
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
 if __name__ == "__main__":
     print("AI Predictions API Server")

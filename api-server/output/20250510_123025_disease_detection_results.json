@@ -1,0 +1,20 @@
+{
+    "inference_id": "64742307-da85-4e61-ab12-9765f735c0c3",
+    "time": 0.039019583999106544,
+    "image": {
+        "width": 612,
+        "height": 351
+    },
+    "predictions": [
+        {
+            "x": 184.5,
+            "y": 257.0,
+            "width": 31.0,
+            "height": 24.0,
+            "confidence": 0.5354297161102295,
+            "class": "Tomato leaf late blight",
+            "class_id": 4,
+            "detection_id": "e740223a-29fd-439c-a5db-39da0368210e"
+        }
+    ]
+}
