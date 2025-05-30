@@ -555,161 +555,168 @@
         <!-- My Products Tab -->
         <div class="tab-content active" id="products-tab">
             {% if products %}
-                <div class="product-grid">
-                    {% for product in products %}
-                        <div class="product-card">
-                            <div class="relative">
-                                {% if product.name %}
-                                    <img src="{{ url_for('static', filename='/images/'+product.name+'.jpg') }}" alt="{{ product.name }}" class="product-image">
-                                {% else %}
-                                    <div class="product-image flex items-center justify-center">
-                                        <i class="fas fa-seedling text-5xl text-green-300"></i>
-                                    </div>
-                                {% endif %}
-                                
-                                {% if product.quality_score >= 9 %}
-                                    <div class="product-badge quality-badge-excellent">Quality: {{ product.quality_score }}/10</div>
-                                {% elif product.quality_score >= 7 %}
-                                    <div class="product-badge quality-badge-good">Quality: {{ product.quality_score }}/10</div>
-                                {% else %}
-                                    <div class="product-badge quality-badge-average">Quality: {{ product.quality_score }}/10</div>
-                                {% endif %}
+            <div class="product-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <div class="relative">
+                        {% if product.name %}
+                        <img src="{{ url_for('static', filename='/images/'+product.name+'.jpg') }}"
+                            alt="{{ product.name }}" class="product-image">
+                        {% else %}
+                        <div class="product-image flex items-center justify-center">
+                            <i class="fas fa-seedling text-5xl text-green-300"></i>
+                        </div>
+                        {% endif %}
+
+                        {% if product.quality_score >= 9 %}
+                        <div class="product-badge quality-badge-excellent">Quality: {{ product.quality_score }}/10</div>
+                        {% elif product.quality_score >= 7 %}
+                        <div class="product-badge quality-badge-good">Quality: {{ product.quality_score }}/10</div>
+                        {% else %}
+                        <div class="product-badge quality-badge-average">Quality: {{ product.quality_score }}/10</div>
+                        {% endif %}
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <div class="product-info">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="fas fa-tag"></i></div>
+                                <span>Category: {{ product.category|capitalize }}</span>
                             </div>
-                            <div class="product-details">
-                                <h3 class="product-name">{{ product.name }}</h3>
-                                <div class="product-info">
-                                    <div class="info-item">
-                                        <div class="info-icon"><i class="fas fa-tag"></i></div>
-                                        <span>Category: {{ product.category|capitalize }}</span>
-                                    </div>
-                                    {% if product.zone_label %}
-                                    <div class="info-item">
-                                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                        <span>Zone: {{ product.zone_label }} ({{ product.crop_type }})</span>
-                                    </div>
-                                    {% endif %}
-                                    <div class="info-item">
-                                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                                        <span>Harvested: {{ product.harvest_date }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <div class="info-icon"><i class="fas fa-box"></i></div>
-                                        <span>Available: {{ product.quantity_available }} {{ product.unit }}</span>
-                                    </div>
-                                </div>
-                                <div class="product-price">₹{{ product.price }}/{{ product.unit }}</div>
-                                <div class="product-actions">
-                                    <button class="btn btn-outline flex-1 edit-product-btn" data-product-id="{{ product.product_id }}">
-                                        <i class="fas fa-edit"></i>
-                                        <span>Edit</span>
-                                    </button>
-                                    <button class="btn btn-outline flex-1 delete-product-btn" data-product-id="{{ product.product_id }}">
-                                        <i class="fas fa-trash"></i>
-                                        <span>Delete</span>
-                                    </button>
-                                </div>
+                            {% if product.zone_label %}
+                            <div class="info-item">
+                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <span>Zone: {{ product.zone_label }} ({{ product.crop_type }})</span>
+                            </div>
+                            {% endif %}
+                            <div class="info-item">
+                                <div class="info-icon"><i class="fas fa-calendar"></i></div>
+                                <span>Harvested: {{ product.harvest_date }}</span>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon"><i class="fas fa-box"></i></div>
+                                <span>Available: {{ product.quantity_available }} {{ product.unit }}</span>
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-seedling"></i>
+                        <div class="product-price">₹{{ product.price }}/{{ product.unit }}</div>
+                        <div class="product-actions">
+                            <button class="btn btn-outline flex-1 edit-product-btn"
+                                data-product-id="{{ product.product_id }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
+                            </button>
+                            <button class="btn btn-outline flex-1 delete-product-btn"
+                                data-product-id="{{ product.product_id }}">
+                                <i class="fas fa-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
                     </div>
-                    <h3 class="empty-title">No Products Listed</h3>
-                    <p class="empty-description">You haven't listed any products yet. Add your first product to start selling.</p>
-                    <button class="btn btn-primary add-product-tab-btn">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Your First Product</span>
-                    </button>
                 </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <h3 class="empty-title">No Products Listed</h3>
+                <p class="empty-description">You haven't listed any products yet. Add your first product to start
+                    selling.</p>
+                <button class="btn btn-primary add-product-tab-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Your First Product</span>
+                </button>
+            </div>
             {% endif %}
         </div>
 
         <!-- Orders Tab -->
         <div class="tab-content" id="orders-tab">
             {% if orders %}
-                {% for order in orders %}
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div>
-                                <div class="order-id">Order #{{ order.order_id }}</div>
-                                <div class="order-date">{{ order.order_date }}</div>
-                            </div>
-                            <div class="status-badge status-{{ order.status }}">
-                                {{ order.status|capitalize }}
-                            </div>
-                        </div>
-                        <div class="order-customer">
-                            <div class="customer-name">{{ order.customer_name }}</div>
-                            <div class="customer-details">
-                                <div class="customer-detail">
-                                    <i class="fas fa-phone text-green-500"></i>
-                                    <span>{{ order.customer_phone }}</span>
-                                </div>
-                                <div class="customer-detail">
-                                    <i class="fas fa-map-marker-alt text-green-500"></i>
-                                    <span>{{ order.delivery_address }}</span>
-                                </div>
-                                <div class="customer-detail">
-                                    <i class="fas fa-calendar text-green-500"></i>
-                                    <span>Delivery: {{ order.delivery_date }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="order-items">
-                            {% for item in order.items %}
-                                <div class="order-item">
-                                    <div>
-                                        <div class="item-name">{{ item.product_name }}</div>
-                                        <div class="item-quantity">{{ item.quantity }} {{ item.unit }}</div>
-                                    </div>
-                                    <div class="item-price">₹{{ item.subtotal }}</div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="order-total">
-                            <span>Total</span>
-                            <span>₹{{ order.total_amount }}</span>
-                        </div>
-                        {% if order.special_instructions %}
-                            <div class="mt-4 text-sm text-gray-600">
-                                <strong>Special Instructions:</strong> {{ order.special_instructions }}
-                            </div>
-                        {% endif %}
-                        <div class="order-actions">
-                            {% if order.status == 'pending' %}
-                                <button class="btn btn-primary confirm-order-btn" data-order-id="{{ order.order_id }}">
-                                    <i class="fas fa-check"></i>
-                                    <span>Confirm Order</span>
-                                </button>
-                                <button class="btn btn-outline cancel-order-btn" data-order-id="{{ order.order_id }}">
-                                    <i class="fas fa-times"></i>
-                                    <span>Cancel Order</span>
-                                </button>
-                            {% elif order.status == 'confirmed' %}
-                                <button class="btn btn-primary ship-order-btn" data-order-id="{{ order.order_id }}">
-                                    <i class="fas fa-truck"></i>
-                                    <span>Mark as Shipped</span>
-                                </button>
-                            {% elif order.status == 'shipped' %}
-                                <button class="btn btn-primary deliver-order-btn" data-order-id="{{ order.order_id }}">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Mark as Delivered</span>
-                                </button>
-                            {% endif %}
-                        </div>
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #{{ order.order_id }}</div>
+                        <div class="order-date">{{ order.order_date }}</div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-shopping-cart"></i>
+                    <div class="status-badge status-{{ order.status }}">
+                        {{ order.status|capitalize }}
                     </div>
-                    <h3 class="empty-title">No Orders Yet</h3>
-                    <p class="empty-description">You haven't received any orders yet. Once customers place orders, they will appear here.</p>
                 </div>
+                <div class="order-customer">
+                    <div class="customer-name">{{ order.customer_name }}</div>
+                    <div class="customer-details">
+                        <div class="customer-detail">
+                            <i class="fas fa-phone text-green-500"></i>
+                            <span>{{ order.customer_phone }}</span>
+                        </div>
+                        <div class="customer-detail">
+                            <i class="fas fa-map-marker-alt text-green-500"></i>
+                            <span>{{ order.delivery_address }}</span>
+                        </div>
+                        <div class="customer-detail">
+                            <i class="fas fa-calendar text-green-500"></i>
+                            <span>Delivery: {{ order.delivery_date }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-items">
+                    {% for item in order.items %}
+                    <div class="order-item">
+                        <div>
+                            <div class="item-name">{{ item.product_name }}</div>
+                            <div class="item-quantity">{{ item.quantity }} {{ item.unit }}</div>
+                        </div>
+                        <div class="item-price">₹{{ item.subtotal }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="order-total">
+                    <span>Total</span>
+                    <span>₹{{ order.total_amount }}</span>
+                </div>
+                {% if order.special_instructions %}
+                <div class="mt-4 text-sm text-gray-600">
+                    <strong>Special Instructions:</strong> {{ order.special_instructions }}
+                </div>
+                {% endif %}
+                <div class="order-actions">
+                    {% if order.status == 'pending' %}
+                    <button class="btn btn-primary confirm-order-btn" data-order-id="{{ order.order_id }}">
+                        <i class="fas fa-check"></i>
+                        <span>Confirm Order</span>
+                    </button>
+
+
+                    <button class="btn btn-outline cancel-order-btn" data-order-id="{{ order.order_id }}">
+                        <i class="fas fa-times"></i>
+                        <span>Cancel Order</span>
+                    </button>
+                    {% elif order.status == 'confirmed' %}
+                    <button class="btn btn-primary ship-order-btn" data-order-id="{{ order.order_id }}">
+                        <i class="fas fa-truck"></i>
+                        <span>Mark as Shipped</span>
+                    </button>
+                    {% elif order.status == 'shipped' %}
+                    <button class="btn btn-primary deliver-order-btn" data-order-id="{{ order.order_id }}">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Mark as Delivered</span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3 class="empty-title">No Orders Yet</h3>
+                <p class="empty-description">You haven't received any orders yet. Once customers place orders, they will
+                    appear here.</p>
+            </div>
             {% endif %}
         </div>
 
@@ -717,20 +724,21 @@
         <div class="tab-content" id="add-product-tab">
             <div class="form-container">
                 <h3 class="form-title">Add New Product</h3>
-                <form id="add-product-form" action="{{ url_for('add_product_farmer') }}" method="post" enctype="multipart/form-data">
+                <form id="add-product-form" action="{{ url_for('add_product_farmer') }}" method="post"
+                    enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="form-label">Select Greenhouse Zone (Optional)</label>
                         <div class="zone-selector">
                             {% for z in zones %}
-                                <div class="zone-box" data-zone-id="{{ zone.zone_id }}">
-                                    <div class="zone-label">{{ z.zone_label }}</div>
-                                    <div class="zone-info">{{ z.crop_type }}</div>
-                                </div>
+                            <div class="zone-box" data-zone-id="{{ zone.zone_id }}">
+                                <div class="zone-label">{{ z.zone_label }}</div>
+                                <div class="zone-info">{{ z.crop_type }}</div>
+                            </div>
                             {% endfor %}
                         </div>
                         <input type="hidden" name="zone_id" id="selected-zone-id">
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
@@ -751,17 +759,18 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label" for="product-description">Description</label>
                         <textarea id="product-description" name="description" class="form-textarea"></textarea>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
                                 <label class="form-label" for="product-price">Price</label>
-                                <input type="number" id="product-price" name="price" class="form-input" step="0.01" min="0" required>
+                                <input type="number" id="product-price" name="price" class="form-input" step="0.01"
+                                    min="0" required>
                             </div>
                         </div>
                         <div class="form-col">
@@ -780,27 +789,30 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
                                 <label class="form-label" for="product-quantity">Quantity Available</label>
-                                <input type="number" id="product-quantity" name="quantity" class="form-input" min="1" required>
+                                <input type="number" id="product-quantity" name="quantity" class="form-input" min="1"
+                                    required>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
                                 <label class="form-label" for="product-quality">Quality Score (1-10)</label>
-                                <input type="number" id="product-quality" name="quality_score" class="form-input" min="1" max="10" step="0.1" required>
+                                <input type="number" id="product-quality" name="quality_score" class="form-input"
+                                    min="1" max="10" step="0.1" required>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
                                 <label class="form-label" for="product-harvest-date">Harvest Date</label>
-                                <input type="date" id="product-harvest-date" name="harvest_date" class="form-input" required>
+                                <input type="date" id="product-harvest-date" name="harvest_date" class="form-input"
+                                    required>
                             </div>
                         </div>
                         <div class="form-col">
@@ -810,7 +822,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-plus"></i>
                         <span>Add Product</span>
@@ -823,32 +835,33 @@
         <div class="tab-content" id="analyze-crop-tab">
             <div class="form-container">
                 <h3 class="form-title">Analyze Your Crop</h3>
-                <p class="text-gray-600 mb-4">Select a greenhouse zone to analyze crop health and get recommendations.</p>
-                
+                <p class="text-gray-600 mb-4">Select a greenhouse zone to analyze crop health and get recommendations.
+                </p>
+
                 <div class="zone-selector">
                     {% for zone in zones %}
-                        <div class="zone-box analyze-zone-box" data-zone-id="{{ zone.zone_id }}">
-                            <div class="zone-label">{{ zone.zone_label }}</div>
-                            <div class="zone-info">{{ zone.crop_type }}</div>
-                        </div>
+                    <div class="zone-box analyze-zone-box" data-zone-id="{{ zone.zone_id }}">
+                        <div class="zone-label">{{ zone.zone_label }}</div>
+                        <div class="zone-info">{{ zone.crop_type }}</div>
+                    </div>
                     {% endfor %}
                 </div>
-                
+
                 <button id="analyze-btn" class="btn btn-primary" disabled>
                     <i class="fas fa-chart-line"></i>
                     <span>Analyze Selected Zone</span>
                 </button>
-                
+
                 <div class="analysis-result" id="analysis-result">
                     <div class="analysis-header">
                         <div class="analysis-title">Analysis Results</div>
                         <div class="analysis-date" id="analysis-date">May 10, 2023</div>
                     </div>
-                    
+
                     <div class="analysis-score">
                         <span id="health-score">8.5</span>/10
                     </div>
-                    
+
                     <div class="analysis-details">
                         <div class="analysis-item">
                             <div class="analysis-item-label">Estimated Yield</div>
@@ -867,7 +880,7 @@
                             <div class="analysis-item-value" id="nutrient-deficiency">None detected</div>
                         </div>
                     </div>
-                    
+
                     <div class="recommendations">
                         <div class="recommendations-title">Recommendations</div>
                         <ul class="recommendations-list" id="recommendations-list">
@@ -876,7 +889,7 @@
                             <li>Optimal for harvesting within 5-7 days</li>
                         </ul>
                     </div>
-                    
+
                     <div class="mt-4">
                         <button id="list-product-btn" class="btn btn-primary">
                             <i class="fas fa-tag"></i>
@@ -910,94 +923,113 @@
         background-color: #e6ffe6;
     }
 </style>
+<script>
+document.querySelectorAll('.confirm-order-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const orderId = this.getAttribute('data-order-id');
+        fetch(`/confirm-order/${orderId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'  // if using CSRF
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();  // Reload to reflect updated status
+            }
+        });
+    });
+});
+</script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Tab Switching
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
-        
+
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const tabName = button.getAttribute('data-tab');
-                
+
                 // Remove active class from all buttons and contents
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 tabContents.forEach(content => content.classList.remove('active'));
-                
+
                 // Add active class to clicked button and corresponding content
                 button.classList.add('active');
                 document.getElementById(`${tabName}-tab`).classList.add('active');
             });
         });
-        
+
         // Add Product Tab Button
         const addProductTabBtn = document.querySelector('.add-product-tab-btn');
         if (addProductTabBtn) {
             addProductTabBtn.addEventListener('click', () => {
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 tabContents.forEach(content => content.classList.remove('active'));
-                
+
                 document.querySelector('[data-tab="add-product"]').classList.add('active');
                 document.getElementById('add-product-tab').classList.add('active');
             });
         }
-        
+
         // Zone Selection in Add Product
         const zoneBoxes = document.querySelectorAll('.zone-box:not(.analyze-zone-box)');
         const selectedZoneInput = document.getElementById('selected-zone-id');
-        
+
         zoneBoxes.forEach(box => {
             box.addEventListener('click', () => {
                 zoneBoxes.forEach(b => b.classList.remove('active'));
                 box.classList.add('active');
-                
+
                 const zoneId = box.getAttribute('data-zone-id');
                 selectedZoneInput.value = zoneId;
             });
         });
-        
+
         // Analyze Crop Zone Selection
         const analyzeZoneBoxes = document.querySelectorAll('.analyze-zone-box');
         const analyzeBtn = document.getElementById('analyze-btn');
         let selectedAnalyzeZoneId = null;
-        
+
         analyzeZoneBoxes.forEach(box => {
             box.addEventListener('click', () => {
                 analyzeZoneBoxes.forEach(b => b.classList.remove('active'));
                 box.classList.add('active');
-                
+
                 selectedAnalyzeZoneId = box.getAttribute('data-zone-id');
                 analyzeBtn.removeAttribute('disabled');
             });
         });
-        
+
         // Analyze Button Click
         analyzeBtn.addEventListener('click', () => {
             if (!selectedAnalyzeZoneId) return;
-            
+
             // In a real application, this would be an AJAX call to the server
             // For demo purposes, we'll simulate a response
             simulateAnalysis(selectedAnalyzeZoneId);
         });
-        
+
         function simulateAnalysis(zoneId) {
             // Show loading state
             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Analyzing...</span>';
-            
+
             // Simulate API call delay
             setTimeout(() => {
                 // Update analysis result
                 document.getElementById('analysis-date').textContent = new Date().toLocaleDateString();
                 document.getElementById('health-score').textContent = (Math.random() * 3 + 7).toFixed(1);
                 document.getElementById('estimated-yield').textContent = (Math.random() * 5 + 10).toFixed(1) + ' kg/m²';
-                
+
                 // Show analysis result
                 document.getElementById('analysis-result').classList.add('active');
-                
+
                 // Reset button
                 analyzeBtn.innerHTML = '<i class="fas fa-chart-line"></i><span>Analyze Selected Zone</span>';
-                
+
                 // In a real application, you would make an AJAX call to the server
                 // fetch('/api/analyze-crop', {
                 //     method: 'POST',
@@ -1036,17 +1068,17 @@
                 // });
             }, 1500);
         }
-        
+
         // List Product Button Click
         const listProductBtn = document.getElementById('list-product-btn');
         listProductBtn.addEventListener('click', () => {
             // Switch to Add Product tab and pre-fill some fields
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
-            
+
             document.querySelector('[data-tab="add-product"]').classList.add('active');
             document.getElementById('add-product-tab').classList.add('active');
-            
+
             // Pre-fill zone selection
             if (selectedAnalyzeZoneId) {
                 zoneBoxes.forEach(box => {
@@ -1054,60 +1086,60 @@
                         box.click();
                     }
                 });
-                
+
                 // Pre-fill quality score
                 const healthScore = parseFloat(document.getElementById('health-score').textContent);
                 document.getElementById('product-quality').value = healthScore;
-                
+
                 // Set harvest date to today
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('product-harvest-date').value = today;
             }
         });
-        
+
         // Order Status Update Buttons
         const confirmOrderBtns = document.querySelectorAll('.confirm-order-btn');
         const cancelOrderBtns = document.querySelectorAll('.cancel-order-btn');
         const shipOrderBtns = document.querySelectorAll('.ship-order-btn');
         const deliverOrderBtns = document.querySelectorAll('.deliver-order-btn');
-        
+
         confirmOrderBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const orderId = btn.getAttribute('data-order-id');
                 updateOrderStatus(orderId, 'confirmed');
             });
         });
-        
+
         cancelOrderBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const orderId = btn.getAttribute('data-order-id');
                 updateOrderStatus(orderId, 'cancelled');
             });
         });
-        
+
         shipOrderBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const orderId = btn.getAttribute('data-order-id');
                 updateOrderStatus(orderId, 'shipped');
             });
         });
-        
+
         deliverOrderBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const orderId = btn.getAttribute('data-order-id');
                 updateOrderStatus(orderId, 'delivered');
             });
         });
-        
+
         function updateOrderStatus(orderId, status) {
             // In a real application, this would be an AJAX call to the server
             // For demo purposes, we'll simulate a response
-            
+
             // Show loading state
             const btn = document.querySelector(`[data-order-id="${orderId}"]`);
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Updating...</span>';
-            
+
             // Simulate API call delay
             setTimeout(() => {
                 // In a real application, you would make an AJAX call to the server
@@ -1127,17 +1159,17 @@
                 //     console.error('Error:', error);
                 //     btn.innerHTML = originalHtml;
                 // });
-                
+
                 // For demo, just reload the page
                 alert(`Order #${orderId} has been ${status}.`);
                 window.location.reload();
             }, 1000);
         }
-        
+
         // Product Edit and Delete Buttons
         const editProductBtns = document.querySelectorAll('.edit-product-btn');
         const deleteProductBtns = document.querySelectorAll('.delete-product-btn');
-        
+
         editProductBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const productId = btn.getAttribute('data-product-id');
@@ -1145,7 +1177,7 @@
                 // In a real application, this would redirect to an edit page or open a modal
             });
         });
-        
+
         deleteProductBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const productId = btn.getAttribute('data-product-id');

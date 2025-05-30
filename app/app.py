@@ -4,16 +4,18 @@ from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import json
+from flask_wtf.csrf import CSRFProtect
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from database.database import (
-    init_db, add_user, get_user_by_phone, update_user_profile, update_zone_data,
+    init_db, add_user, get_user_by_phone, update_order_status, update_user_profile, update_zone_data,
     get_all_products, get_product_by_id, create_order, add_order_item,
     get_customer_orders,get_farmer_products,add_product,get_pending_orders
 )
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+csrf = CSRFProtect(app)
 
 init_db()
 
@@ -189,6 +191,13 @@ def schemes():
     username=session['name']
     role = session['role']
     return render_template('schemes.html', schemes=schemes,username=username,role=role)
+
+@app.route('/confirm-order/<int:order_id>', methods=['POST'])
+def confirm_order(order_id):
+    success = update_order_status(order_id, 'confirmed')
+    if success:
+        return jsonify({'message': 'Order confirmed successfully'}), 200
+    return jsonify({'message': 'Invalid or already confirmed order'}), 400
 
 @app.route('/marketplace-farmer')
 def marketplace_farmer():

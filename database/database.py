@@ -564,6 +564,23 @@ def get_pending_orders():
             ORDER BY order_date DESC
         """)
         return cur.fetchall()
+    
+def update_order_status(order_id, status):
+    """Update the status of an order in the database."""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("""
+                UPDATE orders
+                SET status = ?
+                WHERE order_id = ?
+            """, (status, order_id))
+            conn.commit()  # Commit the changes
+            return cur.rowcount  # Return number of rows affected
+    except sqlite3.Error as e:
+        print(f"Database error while updating order status: {e}")
+        return 0
 
 if __name__ == '__main__':
     init_db()
