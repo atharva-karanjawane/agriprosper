@@ -348,319 +348,74 @@
     <!-- Filter Bar -->
     <div class="filter-bar">
         <input type="text" class="search-input" placeholder="Search crops...">
-        <select class="filter-select">
+        <select class="filter-select" id="category-filter">
             <option value="">All Categories</option>
-            <option value="vegetables">Vegetables</option>
-            <option value="fruits">Fruits</option>
-            <option value="grains">Grains</option>
-            <option value="herbs">Herbs</option>
+            <option value="vegetables" {% if category == 'vegetables' %}selected{% endif %}>Vegetables</option>
+            <option value="fruits" {% if category == 'fruits' %}selected{% endif %}>Fruits</option>
+            <option value="grains" {% if category == 'grains' %}selected{% endif %}>Grains</option>
+            <option value="herbs" {% if category == 'herbs' %}selected{% endif %}>Herbs</option>
         </select>
-        <select class="filter-select">
+        <select class="filter-select" id="sort-filter">
             <option value="">Sort By</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="quality">Quality Score</option>
-            <option value="recent">Recently Harvested</option>
+            <option value="price-low" {% if sort_by == 'price-low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price-high" {% if sort_by == 'price-high' %}selected{% endif %}>Price: High to Low</option>
+            <option value="quality" {% if sort_by == 'quality' %}selected{% endif %}>Quality Score</option>
+            <option value="recent" {% if sort_by == 'recent' %}selected{% endif %}>Recently Harvested</option>
         </select>
     </div>
 
     <!-- Product Grid -->
     <div class="product-grid">
-        <!-- Product Card 1 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/tomatoes.jpg') }}" alt="Fresh Tomatoes" class="product-image">
-                <div class="product-badge quality-badge-excellent">Quality: 9.5/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Fresh Organic Tomatoes</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: John Smith</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 5, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Green Valley Farm</span>
+        {% if products %}
+            {% for product in products %}
+            <div class="product-card">
+                <div class="relative">
+                    <img src="{{ url_for('static', filename=product.image_path) if product.image_path else 'images/placeholder.jpg' }}" alt="{{ product.name }}" class="product-image">
+                    <div class="product-badge {% if product.quality_score >= 9 %}quality-badge-excellent{% elif product.quality_score >= 8 %}quality-badge-good{% else %}quality-badge-average{% endif %}">
+                        Quality: {{ "%.1f"|format(product.quality_score) }}/10
                     </div>
                 </div>
-                <div class="product-price">$3.99/kg</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
+                <div class="product-details">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-info">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-user"></i></div>
+                            <span>Farmer: {{ product.farmer_name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-calendar"></i></div>
+                            <span>Harvested: {{ product.harvest_date }}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <span>Origin: {{ product.farm_location }}</span>
+                        </div>
                     </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Fresh Organic Tomatoes" data-price="3.99" data-farmer="John Smith">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Card 2 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/apples.jpg') }}" alt="Fresh Apples" class="product-image">
-                <div class="product-badge quality-badge-excellent">Quality: 9.8/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Red Delicious Apples</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: Sarah Johnson</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 7, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Apple Orchard Farm</span>
+                    <div class="product-price">${{ "%.2f"|format(product.price) }}/{{ product.unit }}</div>
+                    <div class="product-actions">
+                        <div class="quantity-input">
+                            <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
+                            <div class="quantity-value">1</div>
+                            <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
+                        </div>
+                        <button class="btn btn-primary flex-1 add-to-cart-btn" 
+                                data-product-id="{{ product.product_id }}"
+                                data-product="{{ product.name }}" 
+                                data-price="{{ product.price }}" 
+                                data-farmer="{{ product.farmer_name }}"
+                                data-unit="{{ product.unit }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Add to Cart</span>
+                        </button>
                     </div>
                 </div>
-                <div class="product-price">$4.50/kg</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Red Delicious Apples" data-price="4.50" data-farmer="Sarah Johnson">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
             </div>
-        </div>
-
-        <!-- Product Card 3 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/carrots.jpg') }}" alt="Fresh Carrots" class="product-image">
-                <div class="product-badge quality-badge-good">Quality: 8.7/10</div>
+            {% endfor %}
+        {% else %}
+            <div class="col-span-full text-center py-8">
+                <p class="text-gray-500">No products available at the moment.</p>
             </div>
-            <div class="product-details">
-                <h3 class="product-name">Organic Carrots</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: Michael Brown</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 3, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Root Vegetable Farm</span>
-                    </div>
-                </div>
-                <div class="product-price">$2.75/kg</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Organic Carrots" data-price="2.75" data-farmer="Michael Brown">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Card 4 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/lettuce.jpg') }}" alt="Fresh Lettuce" class="product-image">
-                <div class="product-badge quality-badge-excellent">Quality: 9.2/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Fresh Lettuce</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: Emily Wilson</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 8, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Leafy Greens Farm</span>
-                    </div>
-                </div>
-                <div class="product-price">$2.25/head</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Fresh Lettuce" data-price="2.25" data-farmer="Emily Wilson">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Card 5 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/potatoes.jpg') }}" alt="Fresh Potatoes" class="product-image">
-                <div class="product-badge quality-badge-good">Quality: 8.9/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Russet Potatoes</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: David Clark</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 2, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Potato Valley Farm</span>
-                    </div>
-                </div>
-                <div class="product-price">$1.99/kg</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Russet Potatoes" data-price="1.99" data-farmer="David Clark">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Card 6 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/strawberries.jpg') }}" alt="Fresh Strawberries" class="product-image">
-                <div class="product-badge quality-badge-excellent">Quality: 9.7/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Sweet Strawberries</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: Lisa Martinez</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 9, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Berry Patch Farm</span>
-                    </div>
-                </div>
-                <div class="product-price">$5.99/kg</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Sweet Strawberries" data-price="5.99" data-farmer="Lisa Martinez">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Card 7 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/corn.jpg') }}" alt="Fresh Corn" class="product-image">
-                <div class="product-badge quality-badge-good">Quality: 8.5/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Sweet Corn</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: Robert Taylor</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 6, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Cornfield Farm</span>
-                    </div>
-                </div>
-                <div class="product-price">$0.75/ear</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Sweet Corn" data-price="0.75" data-farmer="Robert Taylor">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Product Card 8 -->
-        <div class="product-card">
-            <div class="relative">
-                <img src="{{ url_for('static', filename='images/cucumbers.jpg') }}" alt="Fresh Cucumbers" class="product-image">
-                <div class="product-badge quality-badge-average">Quality: 7.8/10</div>
-            </div>
-            <div class="product-details">
-                <h3 class="product-name">Fresh Cucumbers</h3>
-                <div class="product-info">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-user"></i></div>
-                        <span>Farmer: Thomas Lee</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
-                        <span>Harvested: May 4, 2023</span>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <span>Origin: Cucumber Grove Farm</span>
-                    </div>
-                </div>
-                <div class="product-price">$2.50/kg</div>
-                <div class="product-actions">
-                    <div class="quantity-input">
-                        <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
-                        <div class="quantity-value">1</div>
-                        <div class="quantity-btn increase-btn"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <button class="btn btn-primary flex-1 place-order-btn" data-product="Fresh Cucumbers" data-price="2.50" data-farmer="Thomas Lee">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Place Order</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        {% endif %}
     </div>
 
     <!-- Cart Summary -->
@@ -672,64 +427,10 @@
             <div class="cart-count">0 items</div>
             <div class="cart-total">Total: $0.00</div>
         </div>
-        <button class="btn btn-primary checkout-btn" disabled>
-            <span>Checkout</span>
+        <a href="{{ url_for('order_placed') }}" class="btn btn-primary checkout-btn" disabled>
+            <span>Confirm Order</span>
             <i class="fas fa-arrow-right"></i>
-        </button>
-    </div>
-
-    <!-- Order Modal -->
-    <div class="order-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Place Your Order</h3>
-                <div class="modal-close"><i class="fas fa-times"></i></div>
-            </div>
-            <div class="order-summary">
-                <div class="summary-item">
-                    <span>Product:</span>
-                    <span id="modal-product">Fresh Organic Tomatoes</span>
-                </div>
-                <div class="summary-item">
-                    <span>Farmer:</span>
-                    <span id="modal-farmer">John Smith</span>
-                </div>
-                <div class="summary-item">
-                    <span>Quantity:</span>
-                    <span id="modal-quantity">1 kg</span>
-                </div>
-                <div class="summary-item">
-                    <span>Price per unit:</span>
-                    <span id="modal-price">$3.99</span>
-                </div>
-                <div class="summary-total">
-                    <span>Total:</span>
-                    <span id="modal-total">$3.99</span>
-                </div>
-            </div>
-            <form class="order-form">
-                <div class="form-group">
-                    <label class="form-label">Delivery Address</label>
-                    <input type="text" class="form-input" placeholder="Enter your full address">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Contact Number</label>
-                    <input type="tel" class="form-input" placeholder="Enter your phone number">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Delivery Date</label>
-                    <input type="date" class="form-input" min="{{ tomorrow_date }}">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Special Instructions (Optional)</label>
-                    <textarea class="form-input" rows="3" placeholder="Any special instructions for delivery or handling"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-check"></i>
-                    <span>Confirm Order</span>
-                </button>
-            </form>
-        </div>
+        </a>
     </div>
 </div>
 {% endblock %}
@@ -760,94 +461,98 @@
             });
         });
         
-        // Order Modal Functionality
-        const orderModal = document.querySelector('.order-modal');
-        const modalClose = document.querySelector('.modal-close');
-        const placeOrderBtns = document.querySelectorAll('.place-order-btn');
-        
-        const modalProduct = document.getElementById('modal-product');
-        const modalFarmer = document.getElementById('modal-farmer');
-        const modalQuantity = document.getElementById('modal-quantity');
-        const modalPrice = document.getElementById('modal-price');
-        const modalTotal = document.getElementById('modal-total');
-        
-        placeOrderBtns.forEach((btn, index) => {
-            btn.addEventListener('click', () => {
-                const product = btn.getAttribute('data-product');
-                const price = parseFloat(btn.getAttribute('data-price'));
-                const farmer = btn.getAttribute('data-farmer');
-                const quantity = parseInt(quantityValues[index].textContent);
-                const total = (price * quantity).toFixed(2);
-                
-                modalProduct.textContent = product;
-                modalFarmer.textContent = farmer;
-                modalQuantity.textContent = `${quantity} ${quantity === 1 ? 'unit' : 'units'}`;
-                modalPrice.textContent = `$${price}`;
-                modalTotal.textContent = `$${total}`;
-                
-                orderModal.classList.add('active');
-            });
-        });
-        
-        modalClose.addEventListener('click', () => {
-            orderModal.classList.remove('active');
-        });
-        
-        // Close modal when clicking outside
-        orderModal.addEventListener('click', (e) => {
-            if (e.target === orderModal) {
-                orderModal.classList.remove('active');
-            }
-        });
-        
         // Shopping Cart Functionality
         const cartCount = document.querySelector('.cart-count');
         const cartTotal = document.querySelector('.cart-total');
         const checkoutBtn = document.querySelector('.checkout-btn');
         
+        // Initialize cart from session
         let cart = {
             items: [],
             count: 0,
             total: 0
         };
         
+        // Load cart from session if available
+        fetch('/update_cart', {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.cart) {
+                cart = data.cart;
+                updateCart();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading cart:', error);
+        });
+        
         function updateCart() {
             cartCount.textContent = `${cart.count} ${cart.count === 1 ? 'item' : 'items'}`;
             cartTotal.textContent = `Total: $${cart.total.toFixed(2)}`;
-            
             if (cart.count > 0) {
                 checkoutBtn.removeAttribute('disabled');
             } else {
                 checkoutBtn.setAttribute('disabled', true);
             }
+            console.log(cart)
+            // Update cart on server
+            fetch('/update_cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cart),
+            })
+            .catch(error => {
+                console.error('Error updating cart:', error);
+            });
         }
         
-        // Form Submission
-        const orderForm = document.querySelector('.order-form');
+        // Add to Cart Functionality
+        const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
         
-        orderForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const product = modalProduct.textContent;
-            const quantity = modalQuantity.textContent;
-            const total = modalTotal.textContent;
-            
-            // Add to cart
-            cart.items.push({
-                product,
-                quantity,
-                price: parseFloat(total.replace('$', ''))
+        addToCartBtns.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const productId = btn.getAttribute('data-product-id');
+                const product = btn.getAttribute('data-product');
+                const price = parseFloat(btn.getAttribute('data-price'));
+                const farmer = btn.getAttribute('data-farmer');
+                const unit = btn.getAttribute('data-unit');
+                const quantity = parseInt(quantityValues[index].textContent);
+                
+                // Add to cart via AJAX
+                fetch('/add_to_cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update cart display
+                        cart.count = data.cart_count;
+                        cart.total = data.cart_total;
+                        updateCart();
+                        
+                        // Show success message
+                        alert(`${product} has been added to your cart!`);
+                    } else {
+                        // Show error message
+                        alert(data.message || 'Error adding product to cart');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error adding product to cart');
+                });
             });
-            
-            cart.count += parseInt(quantity);
-            cart.total += parseFloat(total.replace('$', ''));
-            
-            updateCart();
-            
-            // Close modal and show success message
-            orderModal.classList.remove('active');
-            
-            alert(`Order for ${product} has been added to your cart!`);
         });
         
         // Search Functionality
@@ -870,8 +575,8 @@
         });
         
         // Filter Functionality
-        const categoryFilter = document.querySelectorAll('.filter-select')[0];
-        const sortFilter = document.querySelectorAll('.filter-select')[1];
+        const categoryFilter = document.getElementById('category-filter');
+        const sortFilter = document.getElementById('sort-filter');
         
         categoryFilter.addEventListener('change', filterProducts);
         sortFilter.addEventListener('change', filterProducts);
@@ -880,12 +585,8 @@
             const category = categoryFilter.value;
             const sortBy = sortFilter.value;
             
-            // Here you would implement the actual filtering logic
-            // For this demo, we'll just log the filter values
-            console.log(`Filtering by: ${category}, Sorting by: ${sortBy}`);
-            
-            // In a real implementation, you would filter the products based on category
-            // and sort them based on the selected criteria
+            // Redirect to the same page with filter parameters
+            window.location.href = `{{ url_for('marketplace_user') }}?category=${category}&sort=${sortBy}`;
         }
     });
 </script>

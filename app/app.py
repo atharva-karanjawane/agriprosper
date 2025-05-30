@@ -4,12 +4,22 @@ from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from database.database import init_db, add_user, get_user_by_phone, update_user_profile, update_zone_data
+from database.database import (
+    init_db, add_user, get_user_by_phone, update_user_profile, update_zone_data,
+    get_all_products, get_product_by_id, create_order, add_order_item,
+    get_customer_orders
+)
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 init_db()
+
+# Initialize cart in session if not present
+@app.before_request
+def initialize_cart():
+    if 'cart' not in session:
+        session['cart'] = {'items': [], 'count': 0, 'total': 0}
 
 @app.route('/')
 def landing_page():
@@ -17,8 +27,11 @@ def landing_page():
 
 @app.route('/dashboard')
 def dashboard():
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
     username = session['name']
-    return render_template('dashboard.html',username=username)
+    return render_template('dashboard.html', username=username)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -28,7 +41,6 @@ def login():
 
         user = get_user_by_phone(phone)
         if user and check_password_hash(user[3], password):
-            print(session)
             session['user_id'] = user[0]
             session['name'] = user[1]
             session['phone'] = phone
@@ -54,7 +66,7 @@ def register():
         latitude = request.form['latitude']
         longitude = request.form['longitude']
 
-        if add_user(name, phone, password, location, latitude, longitude ):
+        if add_user(name, phone, password, location, latitude, longitude):
             flash("Registration successful! Please login.", "success")
             return redirect(url_for('login'))
         else:
@@ -64,17 +76,25 @@ def register():
 
 @app.route('/analytics')
 def analytics():
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
     username = session['name']
-    return render_template('analytics.html',username=username)
+    return render_template('analytics.html', username=username)
 
 @app.route('/alerts')
 def alerts_page():
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
     username = session['name']
-    return render_template('alerts.html',username=username)
-
+    return render_template('alerts.html', username=username)
 
 @app.route('/controls')
 def controls():
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
     username = session['name']
     default_zone = 'A'
     zone_data = get_zone_data(default_zone)
@@ -99,6 +119,10 @@ def get_zone_data_route():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
+    
     username = session.get('name', 'John Doe')
     phoneno = session.get('phone', '123-456-7890')
     location = session.get('location', 'New York')
@@ -107,8 +131,6 @@ def profile():
 
     if request.method == 'POST':
         form_type = request.form.get('form_type')
-        print("request hit")
-        print(form_type)
 
         if form_type == 'profile':
             # Handle profile update
@@ -129,7 +151,6 @@ def profile():
                 flash("Profile not updated", "danger")
 
         elif form_type == 'zone':
-            print("saving data for zone")
             # Parse zone config form
             irrigation_type = request.form.get('irrigation_type')
             led_enabled = request.form.get('led_enabled') == 'on'
@@ -152,13 +173,35 @@ def profile():
 
 @app.route('/marketplace-farmer')
 def marketplace_farmer():
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
     username = session['name']
-    return render_template("marketplace_farmer.html",username=username)
+    return render_template("marketplace_farmer.html", username=username)
 
+# Updated marketplace route with product loading
+@app.route('/marketplace')
 @app.route('/marketplace-user')
 def marketplace_user():
-    username = session['name']
-    return render_template("marketplace_consumer.html",username=username)
+    username = session.get('name', '')
+    
+    # Get filter parameters
+    category = request.args.get('category', '')
+    sort_by = request.args.get('sort', '')
+    
+    # Get products from database
+    products = get_all_products(category, sort_by)
+    
+    # Calculate tomorrow's date for delivery date input
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow_date = tomorrow.strftime('%Y-%m-%d')
+    
+    return render_template('marketplace_consumer.html', 
+                          username=username,
+                          products=products, 
+                          tomorrow_date=tomorrow_date,
+                          category=category,
+                          sort_by=sort_by)
 
 @app.route('/logout')
 def logout():
@@ -166,6 +209,297 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for('login'))
 
+# New routes for checkout functionality
+
+# Get cart route (AJAX)
+@app.route('/update_cart', methods=['GET'])
+def get_cart():
+    cart = session.get('cart', {'items': [], 'count': 0, 'total': 0})
+    return jsonify({'success': True, 'cart': cart})
+
+# Update cart route (AJAX)
+@app.route('/update_cart', methods=['POST'])
+def update_cart():
+    cart_data = request.json
+    session['cart'] = cart_data
+    print(session['cart'])
+    session.modified = True
+    return jsonify({'success': True})
+
+# Add to cart route (AJAX)
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+    
+    # Get product from database
+    product = get_product_by_id(product_id)
+    
+    if not product:
+        return jsonify({'success': False, 'message': 'Product not found'})
+    
+    # Check if product is available in sufficient quantity
+    if product['quantity_available'] < quantity:
+        return jsonify({
+            'success': False, 
+            'message': f'Only {product["quantity_available"]} units available'
+        })
+    
+    # Calculate subtotal
+    subtotal = product['price'] * quantity
+    
+    # Get cart from session
+    cart = session.get('cart', {'items': [], 'count': 0, 'total': 0})
+    
+    # Check if product already in cart
+    existing_item = None
+    for item in cart['items']:
+        if item['product_id'] == product_id:
+            existing_item = item
+            break
+    
+    if existing_item:
+        # Update existing item
+        existing_item['quantity'] += quantity
+        existing_item['subtotal'] += subtotal
+    else:
+        # Add new item
+        cart['items'].append({
+            'product_id': product_id,
+            'name': product['name'],
+            'farmer_name': product['farmer_name'],
+            'price_per_unit': product['price'],
+            'unit': product['unit'],
+            'quantity': quantity,
+            'subtotal': subtotal,
+            'image_path': "sample.jpg"
+        })
+    
+    # Update cart totals
+    cart['count'] += quantity
+    cart['total'] += subtotal
+    
+    # Save cart to session
+    session['cart'] = cart
+    session.modified = True
+    print(session[cart])
+    print(cart)
+    return jsonify({
+        'success': True, 
+        'cart_count': cart['count'],
+        'cart_total': cart['total']
+    })
+
+# Remove from cart route (AJAX)
+@app.route('/remove_from_cart', methods=['POST'])
+def remove_from_cart():
+    data = request.json
+    product_id = data.get('product_id')
+    
+    # Get cart from session
+    cart = session.get('cart', {'items': [], 'count': 0, 'total': 0})
+    
+    # Find item in cart
+    item_index = None
+    for i, item in enumerate(cart['items']):
+        if str(item['product_id']) == str(product_id):
+            item_index = i
+            break
+    
+    if item_index is not None:
+        # Get item details before removing
+        item = cart['items'][item_index]
+        
+        # Update cart totals
+        cart['count'] -= item['quantity']
+        cart['total'] -= item['subtotal']
+        
+        # Remove item from cart
+        cart['items'].pop(item_index)
+        
+        # Save cart to session
+        session['cart'] = cart
+        session.modified = True
+        
+        # Calculate delivery fee
+        delivery_fee = 5.00 if cart['total'] < 50 else 0.00
+        
+        return jsonify({
+            'success': True,
+            'cart_count': cart['count'],
+            'subtotal': cart['total'],
+            'delivery_fee': delivery_fee,
+            'total': cart['total'] + delivery_fee
+        })
+    
+    return jsonify({'success': False, 'message': 'Item not found in cart'})
+
+# Checkout page route
+# Checkout page route
+@app.route('/checkout')
+def checkout():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        flash('Please login to checkout', 'error')
+        return redirect(url_for('login'))
+        
+    # Get cart from session
+    cart = session.get('cart', {'items': [], 'count': 0, 'total': 0})
+    
+    # Ensure cart structure is consistent
+    if not cart.get('items'):
+        cart['items'] = []
+    if not cart.get('count'):
+        cart['count'] = 0
+    if not cart.get('total'):
+        cart['total'] = 0
+    
+    # Calculate delivery fee
+    delivery_fee = 5.00 if cart['total'] < 50 else 0.00
+    
+    # Calculate total
+    total = cart['total'] + delivery_fee
+    
+    # Calculate tomorrow's date for delivery date input
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow_date = tomorrow.strftime('%Y-%m-%d')
+    
+    username = session.get('name', '')
+    
+    # Make sure cart items have all required fields for the template
+    for item in cart['items']:
+        # Ensure these fields exist in each item
+        if 'image_path' not in item:
+            item['image_path'] = "images/product_placeholder.jpg"
+        if 'unit' not in item:
+            item['unit'] = "kg"
+        if 'subtotal' not in item and 'price_per_unit' in item and 'quantity' in item:
+            item['subtotal'] = item['price_per_unit'] * item['quantity']
+    
+    return render_template('checkout.html',
+                          username=username,
+                          cart_items=cart['items'],
+                          subtotal=cart['total'],
+                          delivery_fee=delivery_fee,
+                          total=total,
+                          tomorrow_date=tomorrow_date)
+
+# Process checkout route
+@app.route('/process_checkout', methods=['POST'])
+def process_checkout():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        flash('Please login to checkout', 'error')
+        return redirect(url_for('login'))
+        
+    # Get cart from session
+    cart = session.get('cart', {'items': [], 'count': 0, 'total': 0})
+    
+    # Check if cart is empty
+    if not cart['items']:
+        flash('Your cart is empty', 'error')
+        return redirect(url_for('marketplace_user'))
+    
+    try:
+        # Get form data
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        delivery_date = request.form.get('delivery_date')
+        special_instructions = request.form.get('special_instructions')
+        
+        # Validate required fields
+        if not all([name, phone, address, delivery_date]):
+            flash('Please fill in all required fields', 'error')
+            return redirect(url_for('checkout'))
+        
+        # Calculate delivery fee
+        delivery_fee = 5.00 if cart['total'] < 50 else 0.00
+        
+        # Calculate total
+        total = cart['total'] + delivery_fee
+        
+        # Create order
+        order_id = create_order(
+            customer_id=session['user_id'],
+            total_amount=total,
+            delivery_address=address,
+            contact_number=phone,
+            delivery_date=delivery_date,
+            special_instructions=special_instructions
+        )
+        
+        if not order_id:
+            flash('Error creating order', 'error')
+            return redirect(url_for('checkout'))
+        
+        # Add order items
+        for item in cart['items']:
+            success = add_order_item(
+                order_id=order_id,
+                product_id=item['product_id'],
+                quantity=item['quantity'],
+                price_per_unit=item['price_per_unit']
+            )
+            
+            if not success:
+                flash('Error adding order item', 'error')
+                return redirect(url_for('checkout'))
+        
+        # Clear cart
+        session['cart'] = {'items': [], 'count': 0, 'total': 0}
+        session.modified = True
+        
+        # Show success message
+        flash('Order placed successfully!', 'success')
+        
+        # Redirect to order confirmation page
+        return redirect(url_for('order_confirmation', order_id=order_id))
+    
+    except Exception as e:
+        flash(f'An error occurred: {str(e)}', 'error')
+        return redirect(url_for('checkout'))
+
+# Order confirmation page
+@app.route('/order_confirmation/<int:order_id>')
+def order_confirmation(order_id):
+    # Check if user is logged in
+    if 'user_id' not in session:
+        flash('Please login to view order confirmation', 'error')
+        return redirect(url_for('login'))
+        
+    username = session.get('name', '')
+    
+    # Calculate delivery date (for demo purposes)
+    delivery_date = (datetime.now() + timedelta(days=3)).strftime('%B %d, %Y')
+    
+    return render_template('order_confirmation.html', 
+                          username=username,
+                          order_id=order_id,
+                          delivery_date=delivery_date)
+
+# Order history page
+@app.route('/order_history')
+def order_history():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        flash('Please login to view your order history', 'error')
+        return redirect(url_for('login'))
+    
+    username = session.get('name', '')
+    
+    # Get customer orders
+    orders = get_customer_orders(session['user_id'])
+    
+    return render_template('order_history.html', 
+                          username=username,
+                          orders=orders)
+
+@app.route('/order-placed')
+def order_placed():
+    username = session.get('name', '')
+    return render_template("order_placed.html",username=username)
 
 if __name__ == '__main__':
     app.run(debug=True)

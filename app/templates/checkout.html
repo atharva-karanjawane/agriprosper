@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Agri Prosper{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .checkout-header {
+        background: linear-gradient(135deg, #bbf7d0 0%, #f8fafc 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .cart-items {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        overflow: hidden;
+    }
+
+    .cart-item {
+        display: flex;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+
+    .item-details {
+        flex: 1;
+        margin-left: 1rem;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .item-farmer {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .item-price {
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .item-quantity {
+        display: flex;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .quantity-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-right: 0.5rem;
+    }
+
+    .quantity-value {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .item-subtotal {
+        text-align: right;
+        padding-left: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .subtotal-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .subtotal-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.125rem;
+    }
+
+    .remove-btn {
+        color: var(--danger-color);
+        background: rgba(239, 68, 68, 0.1);
+        border: none;
+        border-radius: 4px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .remove-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+    }
+
+    .order-summary {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        padding: 1.5rem;
+        position: sticky;
+        top: 2rem;
+    }
+
+    .summary-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+    }
+
+    .summary-value {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .total-label {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .total-value {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 1.25rem;
+    }
+
+    .checkout-form {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        color: var(--text-primary);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-cart-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: rgba(34, 197, 94, 0.3);
+    }
+
+    .continue-shopping {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .continue-shopping:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <!-- Checkout Header -->
+    <div class="checkout-header">
+        <h1 class="text-2xl font-semibold text-gray-800">Checkout</h1>
+        <p class="text-gray-600 mt-1">Review your cart and complete your purchase.</p>
+    </div>
+
+    {% if cart_items %}
+    <div class="checkout-grid">
+        <!-- Cart Items -->
+        <div>
+            <div class="cart-items">
+                {% for item in cart_items %}
+                <div class="cart-item" data-product-id="{{ item.product_id }}">
+                    <img src="{{ url_for('static', filename=item.image_path) if item.image_path else 'images/placeholder.jpg' }}" alt="{{ item.name }}" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">{{ item.name }}</div>
+                        <div class="item-farmer">Farmer: {{ item.farmer_name }}</div>
+                        <div class="item-price">${{ item.price_per_unit }} per {{ item.unit }}</div>
+                        <div class="item-quantity">
+                            <span class="quantity-label">Quantity:</span>
+                            <span class="quantity-value">{{ item.quantity }} {{ item.unit }}</span>
+                        </div>
+                    </div>
+                    <div class="item-subtotal">
+                        <div>
+                            <div class="subtotal-label">Subtotal</div>
+                            <div class="subtotal-value">${{ "%.2f"|format(item.subtotal) }}</div>
+                        </div>
+                        <button class="remove-btn" data-product-id="{{ item.product_id }}">
+                            <i class="fas fa-trash-alt"></i> Remove
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Delivery Information Form -->
+            <div class="checkout-form">
+                <h2 class="form-title">Delivery Information</h2>
+                <form id="checkout-form" method="post" action="{{ url_for('process_checkout') }}">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-input" required value="{{ session.get('name', '') }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" required value="{{ session.get('phone', '') }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="address">Delivery Address</label>
+                        <input type="text" id="address" name="address" class="form-input" required value="{{ session.get('location', '') }}">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="delivery_date">Delivery Date</label>
+                            <input type="date" id="delivery_date" name="delivery_date" class="form-input" required min="{{ tomorrow_date }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="special_instructions">Special Instructions (Optional)</label>
+                        <textarea id="special_instructions" name="special_instructions" class="form-input" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h2 class="summary-title">Order Summary</h2>
+            <div class="summary-row">
+                <div class="summary-label">Items ({{ cart_items|length }})</div>
+                <div class="summary-value">${{ "%.2f"|format(subtotal) }}</div>
+            </div>
+            <div class="summary-row">
+                <div class="summary-label">Delivery Fee</div>
+                <div class="summary-value">${{ "%.2f"|format(delivery_fee) }}</div>
+            </div>
+            <div class="summary-total">
+                <div class="total-label">Total</div>
+                <div class="total-value">${{ "%.2f"|format(total) }}</div>
+            </div>
+            <button type="submit" form="checkout-form" class="btn btn-primary w-full mt-4">
+                <i class="fas fa-check-circle"></i>
+                <span>Place Order</span>
+            </button>
+            <a href="{{ url_for('marketplace_user') }}" class="btn btn-secondary w-full mt-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Continue Shopping</span>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="cart-items">
+        <div class="empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h2 class="text-xl font-semibold">Your cart is empty</h2>
+            <p class="mt-2">Looks like you haven't added any products to your cart yet.</p>
+            <a href="{{ url_for('marketplace_user') }}" class="continue-shopping">
+                <i class="fas fa-arrow-left"></i> Continue Shopping
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // First, let's ensure the cart is properly loaded from the session
+    fetch('/update_cart', {
+        method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.cart && data.cart.items.length > 0) {
+            // Check if the cart is empty in the UI but has items in the session
+            const cartItems = document.querySelectorAll('.cart-item');
+            if (cartItems.length === 0) {
+                // The cart is empty in the UI but not in the session, reload the page
+                window.location.reload();
+            }
+        } else if (!data.cart || data.cart.items.length === 0) {
+            // If cart is empty in session, make sure UI reflects that
+            const cartItemsContainer = document.querySelector('.cart-items');
+            if (cartItemsContainer) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold">Your cart is empty</h2>
+                        <p class="mt-2">Looks like you haven't added any products to your cart yet.</p>
+                        <a href="/marketplace-user" class="continue-shopping">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
+                        </a>
+                    </div>
+                `;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error loading cart:', error);
+    });
+
+    // Remove item from cart
+    const removeButtons = document.querySelectorAll('.remove-btn');
+    
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            
+            // Send AJAX request to remove item
+            fetch('/remove_from_cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product_id: productId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove item from DOM
+                    const cartItem = this.closest('.cart-item');
+                    cartItem.remove();
+                    
+                    // Update cart count and totals
+                    updateCartSummary(data.cart_count, data.subtotal, data.delivery_fee, data.total);
+                    
+                    // If cart is empty, reload page to show empty cart message
+                    if (data.cart_count === 0) {
+                        window.location.reload();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+    function updateCartSummary(itemCount, subtotal, deliveryFee, total) {
+        // Update the summary values
+        const itemCountElement = document.querySelector('.summary-row:nth-child(1) .summary-label');
+        const subtotalElement = document.querySelector('.summary-row:nth-child(1) .summary-value');
+        const deliveryFeeElement = document.querySelector('.summary-row:nth-child(2) .summary-value');
+        const totalElement = document.querySelector('.total-value');
+        
+        if (itemCountElement) itemCountElement.textContent = `Items (${itemCount})`;
+        if (subtotalElement) subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+        if (deliveryFeeElement) deliveryFeeElement.textContent = `$${deliveryFee.toFixed(2)}`;
+        if (totalElement) totalElement.textContent = `$${total.toFixed(2)}`;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - Agri Prosper{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .confirmation-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+    }
+
+    .confirmation-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .order-id {
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .next-steps {
+        background: rgba(34, 197, 94, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: left;
+    }
+
+    .steps-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .step-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .step-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .step-number {
+        width: 24px;
+        height: 24px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .step-content {
+        flex: 1;
+    }
+
+    .step-title {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .step-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <h1 class="confirmation-title">Order Placed Successfully!</h1>
+        <div class="order-id">Order ID: #{{ order_id }}</div>
+        <p>Thank you for your order. We've received your purchase request and will process it shortly.</p>
+        <p>A confirmation email has been sent to your registered email address.</p>
+        
+        <div class="next-steps">
+            <h2 class="steps-title">What's Next?</h2>
+            <ul class="step-list">
+                <li class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Order Processing</div>
+                        <div class="step-description">Your order is being processed by the farmers. You'll receive updates as they prepare your items.</div>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Delivery Preparation</div>
+                        <div class="step-description">Once your order is ready, it will be prepared for delivery on your selected date.</div>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Delivery</div>
+                        <div class="step-description">Your fresh produce will be delivered to your doorstep on {{ delivery_date }}.</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="mt-6">
+            <a href="{{ url_for('order_history') }}" class="btn btn-primary">
+                <i class="fas fa-list"></i>
+                <span>View Order History</span>
+            </a>
+            <a href="{{ url_for('marketplace_user') }}" class="btn btn-secondary ml-2">
+                <i class="fas fa-shopping-basket"></i>
+                <span>Continue Shopping</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -207,6 +207,34 @@ def plant_lifecyle_static():
     except sqlite3.IntegrityError:
         return False
 
+def insert_mock_products():
+    products = [
+        ("Tomato", "vegetables", "Fresh red tomatoes", 20.0, "kg", 100, 8.5, "2025-05-01"),
+        ("Spinach", "vegetables", "Green leafy spinach", 15.0, "bunch", 80, 9.0, "2025-05-02"),
+        ("Okra", "vegetables", "Tender okra pods", 18.0, "kg", 60, 8.0, "2025-05-03"),
+        ("Potato", "vegetables", "Organic potatoes", 12.0, "kg", 150, 7.5, "2025-04-28"),
+        ("Strawberry", "fruits", "Sweet strawberries", 50.0, "box", 30, 9.2, "2025-05-04"),
+        ("Apple", "fruits", "Juicy apples", 60.0, "kg", 40, 8.8, "2025-04-30"),
+        ("Carrot", "vegetables", "Crunchy carrots", 22.0, "kg", 90, 8.3, "2025-05-01"),
+        ("Corn", "grains", "Fresh corn cobs", 25.0, "dozen", 70, 8.7, "2025-05-03"),
+        ("Cucumber", "vegetables", "Cool cucumbers", 17.0, "kg", 85, 8.1, "2025-05-02"),
+        ("Mint", "herbs", "Fresh mint leaves", 10.0, "bunch", 50, 9.5, "2025-05-05")
+    ]
+
+    with sqlite3.connect(DB_NAME) as conn:
+        for name, category, desc, price, unit, qty, score, date in products:
+            conn.execute('''
+                INSERT INTO products (
+                    farmer_id, zone_id, name, category, description, price,
+                    unit, quantity_available, quality_score, harvest_date,
+                    is_active, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+            ''', (
+                1, 1, name, category, desc, price, unit,
+                qty, score, date, datetime.now()
+            ))
+        conn.commit()
+    print("Mock products inserted successfully.")
 # New functions for marketplace functionality
 
 def get_farmer_products(farmer_id):
@@ -404,5 +432,124 @@ def update_zone_data(zone_label, user_id, crop_type, irrigation_type, led_enable
         print("Database error:", e)
         return False
 
+def get_all_products(category=None, sort_by=None):
+    """Get all available products with optional filtering and sorting"""
+    with sqlite3.connect(DB_NAME) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        query = """
+            SELECT p.*, u.name as farmer_name, u.location as farm_location 
+            FROM products p
+            JOIN users u ON p.farmer_id = u.id
+            WHERE p.is_active = 1 AND p.quantity_available > 0
+        """
+        params = []
+        
+        if category and category != '':
+            query += " AND p.category = ?"
+            params.append(category)
+        
+        if sort_by:
+            if sort_by == 'price-low':
+                query += " ORDER BY p.price ASC"
+            elif sort_by == 'price-high':
+                query += " ORDER BY p.price DESC"
+            elif sort_by == 'quality':
+                query += " ORDER BY p.quality_score DESC"
+            elif sort_by == 'recent':
+                query += " ORDER BY p.harvest_date DESC"
+        else:
+            query += " ORDER BY p.created_at DESC"
+        
+        cur.execute(query, params)
+        return cur.fetchall()
+
+def get_product_by_id(product_id):
+    """Get a product by its ID"""
+    with sqlite3.connect(DB_NAME) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT p.*, u.name as farmer_name, u.location as farm_location 
+            FROM products p
+            JOIN users u ON p.farmer_id = u.id
+            WHERE p.product_id = ?
+        """, (product_id,))
+        return cur.fetchone()
+
+def create_order(customer_id, total_amount, delivery_address, contact_number, delivery_date, special_instructions=None):
+    """Create a new order and return the order ID"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO orders 
+                (customer_id, total_amount, delivery_address, contact_number, delivery_date, special_instructions)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (customer_id, total_amount, delivery_address, contact_number, delivery_date, special_instructions))
+            return cur.lastrowid
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None
+
+def add_order_item(order_id, product_id, quantity, price_per_unit):
+    """Add an item to an order"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            # Calculate subtotal
+            subtotal = quantity * price_per_unit
+            
+            # Add the order item
+            conn.execute("""
+                INSERT INTO order_items 
+                (order_id, product_id, quantity, price_per_unit, subtotal)
+                VALUES (?, ?, ?, ?, ?)
+            """, (order_id, product_id, quantity, price_per_unit, subtotal))
+            
+            # Update product quantity
+            conn.execute("""
+                UPDATE products
+                SET quantity_available = quantity_available - ?
+                WHERE product_id = ?
+            """, (quantity, product_id))
+            
+            return True
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return False
+
+def get_customer_orders(customer_id):
+    """Get all orders for a customer"""
+    with sqlite3.connect(DB_NAME) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM orders
+            WHERE customer_id = ?
+            ORDER BY order_date DESC
+        """, (customer_id,))
+        orders = cur.fetchall()
+        
+        # Get order items for each order
+        result = []
+        for order in orders:
+            cur.execute("""
+                SELECT oi.*, p.name as product_name, p.unit, u.name as farmer_name
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.product_id
+                JOIN users u ON p.farmer_id = u.id
+                WHERE oi.order_id = ?
+            """, (order['order_id'],))
+            items = cur.fetchall()
+            
+            order_dict = dict(order)
+            order_dict['items'] = [dict(item) for item in items]
+            result.append(order_dict)
+            
+        return result
+
 if __name__ == '__main__':
     init_db()
+    plant_lifecyle_static()
+    insert_mock_products()

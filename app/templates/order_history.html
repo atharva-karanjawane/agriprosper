@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Order History - Agri Prosper{% endblock %}
+
+{% block extra_css %}
+<style>
+    .history-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .history-header {
+        background: linear-gradient(135deg, #bbf7d0 0%, #f8fafc 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .order-id {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .order-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .order-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+    }
+
+    .status-confirmed {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--primary-color);
+    }
+
+    .status-shipped {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--info-color);
+    }
+
+    .status-delivered {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--primary-color);
+    }
+
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+    }
+
+    .order-items {
+        padding: 1.5rem;
+    }
+
+    .item-row {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed rgba(34, 197, 94, 0.1);
+    }
+
+    .item-row:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .item-name {
+        flex: 2;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .item-farmer {
+        flex: 1;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .item-quantity {
+        flex: 1;
+        text-align: center;
+    }
+
+    .item-price {
+        flex: 1;
+        text-align: right;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .order-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        background: rgba(34, 197, 94, 0.05);
+        border-top: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .delivery-info {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .order-total {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.125rem;
+    }
+
+    .empty-history {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: rgba(34, 197, 94, 0.3);
+    }
+
+    .start-shopping {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .start-shopping:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <!-- History Header -->
+    <div class="history-header">
+        <h1 class="text-2xl font-semibold text-gray-800">Order History</h1>
+        <p class="text-gray-600 mt-1">View and track all your previous orders.</p>
+    </div>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-header">
+                <div>
+                    <div class="order-id">Order #{{ order.order_id }}</div>
+                    <div class="order-date">{{ order.order_date.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                </div>
+                <div class="order-status status-{{ order.status }}">
+                    {{ order.status.capitalize() }}
+                </div>
+            </div>
+            <div class="order-items">
+                {% for item in order.items %}
+                <div class="item-row">
+                    <div class="item-name">{{ item.product_name }}</div>
+                    <div class="item-farmer">{{ item.farmer_name }}</div>
+                    <div class="item-quantity">{{ item.quantity }} {{ item.unit }}</div>
+                    <div class="item-price">${{ "%.2f"|format(item.subtotal) }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="order-footer">
+                <div class="delivery-info">
+                    <div>Delivery to: {{ order.delivery_address }}</div>
+                    <div>Scheduled for: {{ order.delivery_date.strftime('%B %d, %Y') }}</div>
+                </div>
+                <div class="order-total">
+                    Total: ${{ "%.2f"|format(order.total_amount) }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-history">
+            <div class="empty-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h2 class="text-xl font-semibold">No orders yet</h2>
+            <p class="mt-2">You haven't placed any orders yet. Start shopping to see your order history.</p>
+            <a href="{{ url_for('marketplace_user') }}" class="start-shopping">
+                <i class="fas fa-shopping-basket"></i> Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
