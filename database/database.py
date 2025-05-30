@@ -78,6 +78,24 @@ def update_user_profile(user_id, name, phone, email, bio):
             return True
     except sqlite3.IntegrityError:
         return False
+    
+def update_zone_data(zone_label, user_id, crop_type, irrigation_type, led_enabled):
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute('''
+                INSERT INTO zones (zone_label, user_id, crop_type, irrigation_type, led_enabled)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(user_id, zone_label)
+                DO UPDATE SET
+                    crop_type = excluded.crop_type,
+                    irrigation_type = excluded.irrigation_type,
+                    led_enabled = excluded.led_enabled
+            ''', (zone_label, user_id, crop_type, irrigation_type, led_enabled))
+            return True
+    except sqlite3.Error as e:
+        print("Database error:", e)
+        return False
+
 
 if __name__ == '__main__':
     init_db()

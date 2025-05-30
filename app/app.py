@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from database.database import init_db, add_user, get_user_by_phone, update_user_profile
+from database.database import init_db, add_user, get_user_by_phone, update_user_profile, update_zone_data
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -99,7 +99,6 @@ def get_zone_data_route():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    # Get current session data or set defaults
     username = session.get('name', 'John Doe')
     phoneno = session.get('phone', '123-456-7890')
     location = session.get('location', 'New York')
@@ -107,27 +106,50 @@ def profile():
     bio = session.get('bio', 'This is your bio.')
 
     if request.method == 'POST':
-        # Get data from the form
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        email = request.form.get('email')
-        phone_number = request.form.get('phoneno')
-        bio = request.form.get('bio')
+        form_type = request.form.get('form_type')
+        print("request hit")
+        print(form_type)
 
-        session['name'] = f"{first_name} {last_name}"
-        session['phone'] = phone_number
-        session['email'] = email
-        session['bio'] = bio
+        if form_type == 'profile':
+            # Handle profile update
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            email = request.form.get('email')
+            phone_number = request.form.get('phoneno')
+            bio = request.form.get('bio')
 
-        if update_user_profile(session['user_id'], f"{first_name} {last_name}", phone_number, email, bio):
-            flash("Profile Updated", "success")
-        else:
-            flash("Profile not updated", "danger")
+            session['name'] = f"{first_name} {last_name}"
+            session['phone'] = phone_number
+            session['email'] = email
+            session['bio'] = bio
 
-        return redirect(url_for('profile'))
+            if update_user_profile(session['user_id'], f"{first_name} {last_name}", phone_number, email, bio):
+                flash("Profile Updated", "success")
+            else:
+                flash("Profile not updated", "danger")
 
+        elif form_type == 'zone':
+            print("saving data for zone")
+            # Parse zone config form
+            irrigation_type = request.form.get('irrigation_type')
+            led_enabled = request.form.get('led_enabled') == 'on'
+
+            for zone_label in ['A', 'B', 'C', 'D']:
+                crop = request.form.get(f'zone[{zone_label}][crop]')
+                if crop:
+                    update_zone_data(
+                        zone_label=zone_label,
+                        user_id=session['user_id'],
+                        crop_type=crop,
+                        irrigation_type=irrigation_type,
+                        led_enabled=led_enabled
+                    )
+
+            flash("Zone configuration saved.", "success")
+            return redirect(url_for('profile'))
 
     return render_template('profile.html', username=username, phoneno=phoneno, location=location, email=email, bio=bio)
+
 
 @app.route('/logout')
 def logout():

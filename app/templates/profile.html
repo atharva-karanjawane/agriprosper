@@ -143,11 +143,11 @@
         border-radius: 50%;
     }
 
-    input:checked + .toggle-slider {
+    input:checked+.toggle-slider {
         background-color: var(--primary-color);
     }
 
-    input:checked + .toggle-slider:before {
+    input:checked+.toggle-slider:before {
         transform: translateX(24px);
     }
 
@@ -275,9 +275,9 @@
                 <div class="profile-avatar-lg">
                     {% set name_parts = username.split(' ') %}
                     {% if name_parts|length > 1 and name_parts[1] %}
-                        {{ name_parts[0][0] + name_parts[1][0] }}
+                    {{ name_parts[0][0] + name_parts[1][0] }}
                     {% else %}
-                        {{ name_parts[0][:2] }}
+                    {{ name_parts[0][:2] }}
                     {% endif %}
                 </div>
                 <h1 class="text-2xl font-semibold">{{ username }}</h1>
@@ -288,7 +288,7 @@
                         <i class="fas fa-envelope mr-2"></i>{{ email }}
                     </span>
                     {% endif %}
-                    
+
                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
                         <i class="fas fa-phone mr-2"></i>+91 {{ phoneno }}
                     </span>
@@ -317,21 +317,26 @@
             <!-- Personal Info Tab -->
             <div class="tab-content active" id="personal">
                 <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST">
+                    <input type="hidden" name="form_type" value="profile">
                     <div class="input-group">
                         <label class="input-label">First Name</label>
-                        <input type="text" class="input-field" value="{{ username.split(' ')[0] }}" name="first_name" placeholder="first name">
+                        <input type="text" class="input-field" value="{{ username.split(' ')[0] }}" name="first_name"
+                            placeholder="first name">
                     </div>
                     <div class="input-group">
                         <label class="input-label">Last Name</label>
-                        <input type="text" class="input-field" value="{{ username.split(' ')[1] }}" name="last_name" placeholder="last name">
+                        <input type="text" class="input-field" value="{{ username.split(' ')[1] }}" name="last_name"
+                            placeholder="last name">
                     </div>
                     <div class="input-group">
                         <label class="input-label">Email Address</label>
-                        <input type="email" class="input-field" value="{{ email if email else 'email@example.com' }}" name="email" placeholder="email id">
+                        <input type="email" class="input-field" value="{{ email if email else 'email@example.com' }}"
+                            name="email" placeholder="email id">
                     </div>
                     <div class="input-group">
                         <label class="input-label">Phone Number</label>
-                        <input type="tel" class="input-field" name="phoneno" value="{{ phoneno }}" placeholder="Phone number">
+                        <input type="tel" class="input-field" name="phoneno" value="{{ phoneno }}"
+                            placeholder="Phone number">
                     </div>
                     <div class="input-group">
                         <label class="input-label">Role</label>
@@ -357,183 +362,145 @@
                 <div class="space-y-6">
                     <h3 class="text-lg font-semibold text-gray-800">Manage Greenhouse Crops</h3>
                     <p class="text-gray-600">Configure the crops growing in each zone of your greenhouse.</p>
-                    
-                    <div class="greenhouse-layout">
-                        <!-- Zone A -->
-                        <div class="zone-box active" data-zone="A" data-zone-id="1">
-                            <div class="zone-header">
-                                <div class="zone-label">Zone A</div>
-                                <button class="add-crop-btn" data-zone="A">
-                                    <i class="fas fa-plus mr-1"></i>Add Crop
-                                </button>
+
+                    <form id="zone-config-form" method="POST" action="/profile">
+                         <input type="hidden" name="form_type" value="zone">
+                        <div class="greenhouse-layout">
+
+                            <div class="zone-box" data-zone="A">
+                                <input type="hidden" name="zone[A][label]" value="A">
+
+                                <div class="zone-header">
+                                    <div class="zone-label">Zone A</div>
+                                </div>
+
+                                <div class="zone-content">
+                                    <label for="crop-A" class="block mb-1 text-sm font-medium text-gray-700">Select
+                                        Crop</label>
+                                    <select name="zone[A][crop]" id="crop-A" class="input-field w-full">
+                                        <option value="">-- Select a crop --</option>
+                                        <option value="Tomatoes">Tomatoes</option>
+                                        <option value="Bell Peppers">Bell Peppers</option>
+                                        <option value="Cucumbers">Cucumbers</option>
+                                        <option value="Lettuce">Lettuce</option>
+                                        <option value="Spinach">Spinach</option>
+                                        <option value="Carrots">Carrots</option>
+                                        <option value="Radishes">Radishes</option>
+                                        <option value="Herbs">Herbs</option>
+                                        <option value="Peppers">Peppers</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="zone-content">
-                                <div class="crop-tag">Tomatoes <span class="remove-crop" data-zone="A" data-crop="Tomatoes">&times;</span></div>
-                                <div class="crop-tag">Bell Peppers <span class="remove-crop" data-zone="A" data-crop="Bell Peppers">&times;</span></div>
+
+                            <div class="zone-box" data-zone="B">
+                                <input type="hidden" name="zone[B][label]" value="B">
+
+                                <div class="zone-header">
+                                    <div class="zone-label">Zone B</div>
+                                </div>
+
+                                <div class="zone-content">
+                                    <label for="crop-B" class="block mb-1 text-sm font-medium text-gray-700">Select
+                                        Crop</label>
+                                    <select name="zone[B][crop]" id="crop-B" class="input-field w-full">
+                                        <option value="">-- Select a crop --</option>
+                                        <option value="Tomatoes">Tomatoes</option>
+                                        <option value="Bell Peppers">Bell Peppers</option>
+                                        <option value="Cucumbers">Cucumbers</option>
+                                        <option value="Lettuce">Lettuce</option>
+                                        <option value="Spinach">Spinach</option>
+                                        <option value="Carrots">Carrots</option>
+                                        <option value="Radishes">Radishes</option>
+                                        <option value="Herbs">Herbs</option>
+                                        <option value="Peppers">Peppers</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="crop-form hidden" id="crop-form-A">
-                                <select class="crop-select" id="crop-select-A">
-                                    <option value="">Select a crop</option>
-                                    <option value="Tomatoes">Tomatoes</option>
-                                    <option value="Bell Peppers">Bell Peppers</option>
-                                    <option value="Cucumbers">Cucumbers</option>
-                                    <option value="Lettuce">Lettuce</option>
-                                    <option value="Spinach">Spinach</option>
-                                    <option value="Carrots">Carrots</option>
-                                    <option value="Radishes">Radishes</option>
-                                    <option value="Herbs">Herbs</option>
-                                </select>
-                                <div class="flex space-x-2">
-                                    <button class="btn btn-primary btn-sm save-crop" data-zone="A">Save</button>
-                                    <button class="btn btn-outline btn-sm cancel-crop" data-zone="A">Cancel</button>
+
+                            <div class="zone-box" data-zone="C">
+                                <input type="hidden" name="zone[C][label]" value="C">
+
+                                <div class="zone-header">
+                                    <div class="zone-label">Zone C</div>
+                                </div>
+
+                                <div class="zone-content">
+                                    <label for="crop-C" class="block mb-1 text-sm font-medium text-gray-700">Select
+                                        Crop</label>
+                                    <select name="zone[C][crop]" id="crop-C" class="input-field w-full">
+                                        <option value="">-- Select a crop --</option>
+                                        <option value="Tomatoes">Tomatoes</option>
+                                        <option value="Bell Peppers">Bell Peppers</option>
+                                        <option value="Cucumbers">Cucumbers</option>
+                                        <option value="Lettuce">Lettuce</option>
+                                        <option value="Spinach">Spinach</option>
+                                        <option value="Carrots">Carrots</option>
+                                        <option value="Radishes">Radishes</option>
+                                        <option value="Herbs">Herbs</option>
+                                        <option value="Peppers">Peppers</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="zone-box" data-zone="D">
+                                <input type="hidden" name="zone[D][label]" value="D">
+
+                                <div class="zone-header">
+                                    <div class="zone-label">Zone D</div>
+                                </div>
+
+                                <div class="zone-content">
+                                    <label for="crop-D" class="block mb-1 text-sm font-medium text-gray-700">Select
+                                        Crop</label>
+                                    <select name="zone[D][crop]" id="crop-D" class="input-field w-full">
+                                        <option value="">-- Select a crop --</option>
+                                        <option value="Tomatoes">Tomatoes</option>
+                                        <option value="Bell Peppers">Bell Peppers</option>
+                                        <option value="Cucumbers">Cucumbers</option>
+                                        <option value="Lettuce">Lettuce</option>
+                                        <option value="Spinach">Spinach</option>
+                                        <option value="Carrots">Carrots</option>
+                                        <option value="Radishes">Radishes</option>
+                                        <option value="Herbs">Herbs</option>
+                                        <option value="Peppers">Peppers</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Zone Settings Section -->
+                        <div class="mt-6">
+                            <h4 class="font-medium text-gray-800 mb-2">Zone Settings</h4>
+                            <p class="text-sm text-gray-600 mb-4">Configure additional settings for the selected zone.
+                            </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="input-group">
+                                    <label class="input-label">Irrigation Type</label>
+                                    <select class="input-field" name="irrigation_type" id="irrigation-type">
+                                        <option value="drip">Drip Irrigation</option>
+                                        <option value="sprinkler">Sprinkler System</option>
+                                        <option value="mist">Misting System</option>
+                                        <option value="manual">Manual Watering</option>
+                                    </select>
+                                </div>
+
+                                <div class="input-group">
+                                    <label class="input-label">LED Lighting</label>
+                                    <input type="checkbox" name="led_enabled" id="led-enabled" checked>
+                                    <label for="led-enabled">Enable LED</label>
+                                </div>
+
+                                <div class="col-span-2">
+                                    <button type="submit" class="btn btn-primary w-full">
+                                        <i class="fas fa-save mr-2"></i>Save All Zone Settings
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Zone B -->
-                        <div class="zone-box" data-zone="B" data-zone-id="2">
-                            <div class="zone-header">
-                                <div class="zone-label">Zone B</div>
-                                <button class="add-crop-btn" data-zone="B">
-                                    <i class="fas fa-plus mr-1"></i>Add Crop
-                                </button>
-                            </div>
-                            <div class="zone-content">
-                                <div class="crop-tag">Lettuce <span class="remove-crop" data-zone="B" data-crop="Lettuce">&times;</span></div>
-                                <div class="crop-tag">Spinach <span class="remove-crop" data-zone="B" data-crop="Spinach">&times;</span></div>
-                            </div>
-                            <div class="crop-form hidden" id="crop-form-B">
-                                <select class="crop-select" id="crop-select-B">
-                                    <option value="">Select a crop</option>
-                                    <option value="Tomatoes">Tomatoes</option>
-                                    <option value="Bell Peppers">Bell Peppers</option>
-                                    <option value="Cucumbers">Cucumbers</option>
-                                    <option value="Lettuce">Lettuce</option>
-                                    <option value="Spinach">Spinach</option>
-                                    <option value="Carrots">Carrots</option>
-                                    <option value="Radishes">Radishes</option>
-                                    <option value="Herbs">Herbs</option>
-                                </select>
-                                <div class="flex space-x-2">
-                                    <button class="btn btn-primary btn-sm save-crop" data-zone="B">Save</button>
-                                    <button class="btn btn-outline btn-sm cancel-crop" data-zone="B">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Zone C -->
-                        <div class="zone-box" data-zone="C" data-zone-id="3">
-                            <div class="zone-header">
-                                <div class="zone-label">Zone C</div>
-                                <button class="add-crop-btn" data-zone="C">
-                                    <i class="fas fa-plus mr-1"></i>Add Crop
-                                </button>
-                            </div>
-                            <div class="zone-content">
-                                <div class="crop-tag">Cucumbers <span class="remove-crop" data-zone="C" data-crop="Cucumbers">&times;</span></div>
-                            </div>
-                            <div class="crop-form hidden" id="crop-form-C">
-                                <select class="crop-select" id="crop-select-C">
-                                    <option value="">Select a crop</option>
-                                    <option value="Tomatoes">Tomatoes</option>
-                                    <option value="Bell Peppers">Bell Peppers</option>
-                                    <option value="Cucumbers">Cucumbers</option>
-                                    <option value="Lettuce">Lettuce</option>
-                                    <option value="Spinach">Spinach</option>
-                                    <option value="Carrots">Carrots</option>
-                                    <option value="Radishes">Radishes</option>
-                                    <option value="Herbs">Herbs</option>
-                                </select>
-                                <div class="flex space-x-2">
-                                    <button class="btn btn-primary btn-sm save-crop" data-zone="C">Save</button>
-                                    <button class="btn btn-outline btn-sm cancel-crop" data-zone="C">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Zone D -->
-                        <div class="zone-box" data-zone="D" data-zone-id="4">
-                            <div class="zone-header">
-                                <div class="zone-label">Zone D</div>
-                                <button class="add-crop-btn" data-zone="D">
-                                    <i class="fas fa-plus mr-1"></i>Add Crop
-                                </button>
-                            </div>
-                            <div class="zone-content">
-                                <div class="crop-tag">Peppers <span class="remove-crop" data-zone="D" data-crop="Peppers">&times;</span></div>
-                                <div class="crop-tag">Herbs <span class="remove-crop" data-zone="D" data-crop="Herbs">&times;</span></div>
-                            </div>
-                            <div class="crop-form hidden" id="crop-form-D">
-                                <select class="crop-select" id="crop-select-D">
-                                    <option value="">Select a crop</option>
-                                    <option value="Tomatoes">Tomatoes</option>
-                                    <option value="Bell Peppers">Bell Peppers</option>
-                                    <option value="Cucumbers">Cucumbers</option>
-                                    <option value="Lettuce">Lettuce</option>
-                                    <option value="Spinach">Spinach</option>
-                                    <option value="Carrots">Carrots</option>
-                                    <option value="Radishes">Radishes</option>
-                                    <option value="Herbs">Herbs</option>
-                                </select>
-                                <div class="flex space-x-2">
-                                    <button class="btn btn-primary btn-sm save-crop" data-zone="D">Save</button>
-                                    <button class="btn btn-outline btn-sm cancel-crop" data-zone="D">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6">
-                        <h4 class="font-medium text-gray-800 mb-2">Zone Settings</h4>
-                        <p class="text-sm text-gray-600 mb-4">Configure additional settings for the selected zone.</p>
-                        
-                        <form id="zone-settings-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="input-group">
-                                <label class="input-label">Irrigation Type</label>
-                                <select class="input-field" id="irrigation-type">
-                                    <option value="drip">Drip Irrigation</option>
-                                    <option value="sprinkler">Sprinkler System</option>
-                                    <option value="mist">Misting System</option>
-                                    <option value="manual">Manual Watering</option>
-                                </select>
-                            </div>
-                            
-                            <div class="input-group">
-                                <label class="input-label">LED Lighting</label>
-                                <div class="flex items-center space-x-4 mt-2">
-                                    <label class="notification-toggle">
-                                        <input type="checkbox" id="led-enabled" checked>
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                    <span class="text-sm text-gray-700" id="led-status">Enabled</span>
-                                </div>
-                            </div>
-                            
-                            <div class="input-group">
-                                <label class="input-label">Temperature Range (°C)</label>
-                                <div class="flex items-center space-x-2">
-                                    <input type="number" class="input-field" id="temp-min" placeholder="Min" value="20">
-                                    <span>to</span>
-                                    <input type="number" class="input-field" id="temp-max" placeholder="Max" value="28">
-                                </div>
-                            </div>
-                            
-                            <div class="input-group">
-                                <label class="input-label">Humidity Range (%)</label>
-                                <div class="flex items-center space-x-2">
-                                    <input type="number" class="input-field" id="humidity-min" placeholder="Min" value="50">
-                                    <span>to</span>
-                                    <input type="number" class="input-field" id="humidity-max" placeholder="Max" value="70">
-                                </div>
-                            </div>
-                            
-                            <div class="col-span-2">
-                                <button type="button" class="btn btn-primary w-full" id="save-zone-settings">
-                                    <i class="fas fa-save mr-2"></i>Save Zone Settings
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    </form>
+
                 </div>
             </div>
 
@@ -623,7 +590,8 @@
                 <div class="space-y-4">
                     <div class="activity-item">
                         <div class="flex items-start">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                            <div
+                                class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
                                 <i class="fas fa-sliders"></i>
                             </div>
                             <div class="ml-4">
@@ -635,7 +603,8 @@
                     </div>
                     <div class="activity-item">
                         <div class="flex items-start">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                            <div
+                                class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
                                 <i class="fas fa-check"></i>
                             </div>
                             <div class="ml-4">
@@ -647,7 +616,8 @@
                     </div>
                     <div class="activity-item">
                         <div class="flex items-start">
-                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
+                            <div
+                                class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
                                 <i class="fas fa-chart-line"></i>
                             </div>
                             <div class="ml-4">
@@ -659,7 +629,8 @@
                     </div>
                     <div class="activity-item">
                         <div class="flex items-start">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                            <div
+                                class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
                                 <i class="fas fa-seedling"></i>
                             </div>
                             <div class="ml-4">
@@ -677,6 +648,19 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    document.querySelectorAll('.save-crop').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const zone = this.dataset.zone;
+            const selectedCrop = document.querySelector(`#crop-select-${zone}`).value;
+            const hiddenInput = document.querySelector(`.selected-crop-${zone}`);
+            if (hiddenInput) {
+                hiddenInput.value = selectedCrop;
+            }
+        });
+    });
+</script>
+
 <script>
     // Tab Switching
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -703,34 +687,34 @@
     });
 
     // Greenhouse Zone Selection
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const zoneBoxes = document.querySelectorAll('.zone-box');
-        
+
         // Add click event listeners to each zone box
         zoneBoxes.forEach(box => {
-            box.addEventListener('click', function(e) {
+            box.addEventListener('click', function (e) {
                 // Don't trigger if clicking on buttons or form elements
-                if (e.target.closest('.add-crop-btn') || 
-                    e.target.closest('.remove-crop') || 
+                if (e.target.closest('.add-crop-btn') ||
+                    e.target.closest('.remove-crop') ||
                     e.target.closest('.crop-form')) {
                     return;
                 }
-                
+
                 // Remove active class from all boxes
                 zoneBoxes.forEach(b => b.classList.remove('active'));
-                
+
                 // Add active class to clicked box
                 this.classList.add('active');
-                
+
                 // Update zone settings form with the selected zone's data
                 updateZoneSettingsForm(this.getAttribute('data-zone'));
             });
         });
-        
+
         // Add Crop Button Click
         const addCropButtons = document.querySelectorAll('.add-crop-btn');
         addCropButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const zone = this.getAttribute('data-zone');
                 const formId = `crop-form-${zone}`;
@@ -738,11 +722,11 @@
                 this.classList.add('hidden');
             });
         });
-        
+
         // Cancel Crop Button Click
         const cancelCropButtons = document.querySelectorAll('.cancel-crop');
         cancelCropButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const zone = this.getAttribute('data-zone');
                 const formId = `crop-form-${zone}`;
@@ -750,17 +734,17 @@
                 document.querySelector(`.add-crop-btn[data-zone="${zone}"]`).classList.remove('hidden');
             });
         });
-        
+
         // Save Crop Button Click
         const saveCropButtons = document.querySelectorAll('.save-crop');
         saveCropButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const zone = this.getAttribute('data-zone');
                 const selectId = `crop-select-${zone}`;
                 const cropSelect = document.getElementById(selectId);
                 const selectedCrop = cropSelect.value;
-                
+
                 if (selectedCrop) {
                     // Add the crop tag
                     const zoneContent = document.querySelector(`.zone-box[data-zone="${zone}"] .zone-content`);
@@ -768,51 +752,51 @@
                     cropTag.className = 'crop-tag';
                     cropTag.innerHTML = `${selectedCrop} <span class="remove-crop" data-zone="${zone}" data-crop="${selectedCrop}">&times;</span>`;
                     zoneContent.appendChild(cropTag);
-                    
+
                     // Add event listener to the new remove button
                     const removeBtn = cropTag.querySelector('.remove-crop');
                     removeBtn.addEventListener('click', removeCropHandler);
-                    
+
                     // Reset and hide the form
                     cropSelect.value = '';
                     document.getElementById(`crop-form-${zone}`).classList.add('hidden');
                     document.querySelector(`.add-crop-btn[data-zone="${zone}"]`).classList.remove('hidden');
-                    
+
                     // Add to activity log (in a real app, this would be saved to the database)
                     console.log(`Added ${selectedCrop} to Zone ${zone}`);
                 }
             });
         });
-        
+
         // Remove Crop Click Handler
         const removeCropButtons = document.querySelectorAll('.remove-crop');
         removeCropButtons.forEach(button => {
             button.addEventListener('click', removeCropHandler);
         });
-        
+
         function removeCropHandler(e) {
             e.stopPropagation();
             const zone = this.getAttribute('data-zone');
             const crop = this.getAttribute('data-crop');
-            
+
             // Remove the crop tag
             this.parentElement.remove();
-            
+
             // Log the removal (in a real app, this would update the database)
             console.log(`Removed ${crop} from Zone ${zone}`);
         }
-        
+
         // LED Toggle
         const ledToggle = document.getElementById('led-enabled');
         const ledStatus = document.getElementById('led-status');
-        
-        ledToggle.addEventListener('change', function() {
+
+        ledToggle.addEventListener('change', function () {
             ledStatus.textContent = this.checked ? 'Enabled' : 'Disabled';
         });
-        
+
         // Save Zone Settings
         const saveZoneSettingsBtn = document.getElementById('save-zone-settings');
-        saveZoneSettingsBtn.addEventListener('click', function() {
+        saveZoneSettingsBtn.addEventListener('click', function () {
             const activeZone = document.querySelector('.zone-box.active').getAttribute('data-zone');
             const irrigationType = document.getElementById('irrigation-type').value;
             const ledEnabled = document.getElementById('led-enabled').checked;
@@ -820,7 +804,7 @@
             const tempMax = document.getElementById('temp-max').value;
             const humidityMin = document.getElementById('humidity-min').value;
             const humidityMax = document.getElementById('humidity-max').value;
-            
+
             // In a real app, this would save to the database
             console.log(`Saving settings for Zone ${activeZone}:`, {
                 irrigationType,
@@ -828,11 +812,11 @@
                 tempRange: [tempMin, tempMax],
                 humidityRange: [humidityMin, humidityMax]
             });
-            
+
             // Show success message
             alert(`Settings for Zone ${activeZone} saved successfully!`);
         });
-        
+
         // Function to update zone settings form based on selected zone
         function updateZoneSettingsForm(zone) {
             // In a real app, this would fetch data from the database
@@ -871,9 +855,9 @@
                     humidityMax: 75
                 }
             };
-            
+
             const settings = zoneSettings[zone];
-            
+
             // Update form values
             document.getElementById('irrigation-type').value = settings.irrigation;
             document.getElementById('led-enabled').checked = settings.led;
