@@ -127,6 +127,97 @@
     .task-list::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
     }
+
+    /* Greenhouse Zones Styling */
+    .greenhouse-container {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .greenhouse-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .greenhouse-layout {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 1rem;
+        height: 300px;
+    }
+
+    .zone-box {
+        border: 2px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        background: rgba(187, 247, 208, 0.1);
+    }
+
+    .zone-box.active {
+        border-color: var(--primary-color);
+        background: rgba(187, 247, 208, 0.3);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+
+    .zone-label {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .zone-info {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    .zone-details {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: rgba(187, 247, 208, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .zone-details-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .zone-details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .zone-detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .zone-detail-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .zone-detail-value {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
 </style>
 {% endblock %}
 
@@ -135,7 +226,7 @@
     <!-- Welcome Section -->
     <div class="flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-800">Welcome back, Vedant! </h1>
+            <h1 class="text-2xl font-semibold text-gray-800">Welcome back, {{ username }}! </h1>
             <p class="text-gray-600 mt-1">Here's what's happening in your greenhouse today.</p>
         </div>
         <div class="flex space-x-3">
@@ -226,6 +317,64 @@
                 </span>
             </div>
             <p class="text-sm text-gray-600 mt-2">Current light level</p>
+        </div>
+    </div>
+
+    <!-- Greenhouse Zones Section -->
+    <div class="greenhouse-container">
+        <h3 class="greenhouse-title">Greenhouse Zones</h3>
+        <div class="greenhouse-layout">
+            <!-- Zone A -->
+            <div class="zone-box active" data-zone="A" data-zone-id="1">
+                <div class="zone-label">A</div>
+                <div class="zone-info">Tomatoes</div>
+            </div>
+            <!-- Zone B -->
+            <div class="zone-box" data-zone="B" data-zone-id="2">
+                <div class="zone-label">B</div>
+                <div class="zone-info">Lettuce</div>
+            </div>
+            <!-- Zone C -->
+            <div class="zone-box" data-zone="C" data-zone-id="3">
+                <div class="zone-label">C</div>
+                <div class="zone-info">Cucumbers</div>
+            </div>
+            <!-- Zone D -->
+            <div class="zone-box" data-zone="D" data-zone-id="4">
+                <div class="zone-label">D</div>
+                <div class="zone-info">Peppers</div>
+            </div>
+        </div>
+
+        <!-- Selected Zone Details -->
+        <div class="zone-details">
+            <h4 class="zone-details-title">Zone A Details</h4>
+            <div class="zone-details-grid">
+                <div class="zone-detail-item">
+                    <span class="zone-detail-label">Crop Type</span>
+                    <span class="zone-detail-value">Tomatoes</span>
+                </div>
+                <div class="zone-detail-item">
+                    <span class="zone-detail-label">Irrigation Type</span>
+                    <span class="zone-detail-value">Drip</span>
+                </div>
+                <div class="zone-detail-item">
+                    <span class="zone-detail-label">LED Status</span>
+                    <span class="zone-detail-value">Enabled</span>
+                </div>
+                <div class="zone-detail-item">
+                    <span class="zone-detail-label">Temperature</span>
+                    <span class="zone-detail-value">25.2°C</span>
+                </div>
+                <div class="zone-detail-item">
+                    <span class="zone-detail-label">Humidity</span>
+                    <span class="zone-detail-value">62%</span>
+                </div>
+                <div class="zone-detail-item">
+                    <span class="zone-detail-label">Soil Moisture</span>
+                    <span class="zone-detail-value">45%</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -538,5 +687,81 @@
 
     // Update metrics every 5 seconds
     setInterval(updateMetrics, 5000);
+
+    // Greenhouse Zone Selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const zoneBoxes = document.querySelectorAll('.zone-box');
+        const zoneDetailsTitle = document.querySelector('.zone-details-title');
+        const zoneDetailValues = document.querySelectorAll('.zone-detail-value');
+        
+        // Zone data - would normally come from database
+        const zoneData = {
+            'A': {
+                id: 1,
+                crop: 'Tomatoes',
+                irrigation: 'Drip',
+                led: 'Enabled',
+                temp: '25.2°C',
+                humidity: '62%',
+                moisture: '45%'
+            },
+            'B': {
+                id: 2,
+                crop: 'Lettuce',
+                irrigation: 'Sprinkler',
+                led: 'Enabled',
+                temp: '23.8°C',
+                humidity: '68%',
+                moisture: '48%'
+            },
+            'C': {
+                id: 3,
+                crop: 'Cucumbers',
+                irrigation: 'Drip',
+                led: 'Disabled',
+                temp: '26.1°C',
+                humidity: '59%',
+                moisture: '41%'
+            },
+            'D': {
+                id: 4,
+                crop: 'Peppers',
+                irrigation: 'Mist',
+                led: 'Enabled',
+                temp: '24.7°C',
+                humidity: '64%',
+                moisture: '43%'
+            }
+        };
+        
+        // Function to update zone details
+        function updateZoneDetails(zone) {
+            const data = zoneData[zone];
+            zoneDetailsTitle.textContent = `Zone ${zone} Details`;
+            
+            // Update all detail values
+            zoneDetailValues[0].textContent = data.crop;
+            zoneDetailValues[1].textContent = data.irrigation;
+            zoneDetailValues[2].textContent = data.led;
+            zoneDetailValues[3].textContent = data.temp;
+            zoneDetailValues[4].textContent = data.humidity;
+            zoneDetailValues[5].textContent = data.moisture;
+        }
+        
+        // Add click event listeners to each zone box
+        zoneBoxes.forEach(box => {
+            box.addEventListener('click', function() {
+                // Remove active class from all boxes
+                zoneBoxes.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked box
+                this.classList.add('active');
+                
+                // Update zone details
+                const zone = this.getAttribute('data-zone');
+                updateZoneDetails(zone);
+            });
+        });
+    });
 </script>
 {% endblock %}

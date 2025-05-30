@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,19 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        #google_translate_element {
+            z-index: 9999;
+            margin-top:20px;
+
+        }
+        .goog-te-gadget-simple{
+            margin-top:20px;
+            width: 150px;
+            height: 50px;
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
         :root {
             --primary-color: #16a34a;
             --primary-dark: #15803d;
@@ -26,7 +40,7 @@
         /* Layout */
         .main-layout {
             display: grid;
-            grid-template-areas: 
+            grid-template-areas:
                 "sidebar topbar"
                 "sidebar content";
             grid-template-columns: var(--sidebar-width) 1fr;
@@ -257,7 +271,7 @@
 
         @media (max-width: 768px) {
             .main-layout {
-                grid-template-areas: 
+                grid-template-areas:
                     "topbar"
                     "content";
                 grid-template-columns: 1fr;
@@ -299,8 +313,25 @@
             }
         }
     </style>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {
+                    pageLanguage: 'en', // Change this to your default language
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                },
+                'google_translate_element'
+            );
+        }
+    </script>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
+
 </head>
-<body>
+
+<body >
     <div class="main-layout">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -313,19 +344,23 @@
                 </a>
             </div>
             <nav class="flex-1">
-                <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <a href="{{ url_for('dashboard') }}"
+                    class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
                     <i class="fas fa-chart-line"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ url_for('analytics') }}" class="nav-item {% if request.endpoint == 'analytics' %}active{% endif %}">
+                <a href="{{ url_for('analytics') }}"
+                    class="nav-item {% if request.endpoint == 'analytics' %}active{% endif %}">
                     <i class="fas fa-chart-bar"></i>
                     <span>Analytics</span>
                 </a>
-                <a href="{{ url_for('controls') }}" class="nav-item {% if request.endpoint == 'controls' %}active{% endif %}">
+                <a href="{{ url_for('controls') }}"
+                    class="nav-item {% if request.endpoint == 'controls' %}active{% endif %}">
                     <i class="fas fa-sliders"></i>
                     <span>Controls</span>
                 </a>
-                <a href="{{ url_for('alerts_page') }}" class="nav-item {% if request.endpoint == 'alerts' %}active{% endif %}">
+                <a href="{{ url_for('alerts_page') }}"
+                    class="nav-item {% if request.endpoint == 'alerts' %}active{% endif %}">
                     <i class="fas fa-bell"></i>
                     <span>Alerts</span>
                 </a>
@@ -351,15 +386,24 @@
                 <i class="fas fa-bars text-gray-600 text-xl"></i>
             </button>
             <div class="flex items-center space-x-4">
+                <div id="google_translate_element"></div>
                 <button class="btn btn-outline">
                     <i class="fas fa-bell"></i>
-                    <span class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    <span
+                        class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
                 </button>
                 <div class="profile-dropdown">
                     <button class="profile-button">
-                        <div class="profile-avatar">VK</div>
+                        <div class="profile-avatar">
+                            {% set name_parts = username.split(' ') %}
+                            {% if name_parts|length > 1 and name_parts[1] %}
+                                {{ name_parts[0][0] + name_parts[1][0] }}
+                            {% else %}
+                                {{ name_parts[0][:2] }}
+                            {% endif %}
+                        </div>
                         <div class="hidden md:block">
-                            <div class="text-sm font-medium text-gray-700">Vedant Kharade</div>
+                            <div class="text-sm font-medium text-gray-700">{{ username }}</div>
                             <div class="text-xs text-gray-500">Administrator</div>
                         </div>
                         <i class="fas fa-chevron-down text-gray-400 ml-2"></i>
@@ -390,7 +434,7 @@
     </div>
 
     {% block extra_css %}{% endblock %}
-    
+
     <script>
         // Sidebar Toggle
         const layout = document.querySelector('.main-layout');
@@ -438,4 +482,5 @@
 
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>
