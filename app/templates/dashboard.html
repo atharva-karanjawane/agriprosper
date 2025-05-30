@@ -230,10 +230,22 @@
             <p class="text-gray-600 mt-1">Here's what's happening in your greenhouse today.</p>
         </div>
         <div class="flex space-x-3">
-            <button class="btn btn-outline">
+            <button class="btn btn-outline" onclick="downloadReport()">
                 <i class="fas fa-download"></i>
                 <span>Export Report</span>
             </button>
+
+            <script>
+                function downloadReport() {
+                    const link = document.createElement('a');
+                    link.href = 'static/report.pdf';  // Path to your PDF file
+                    link.download = 'AgriProsper_Report.pdf';  // Filename for download
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            </script>
+
             <button class="btn btn-primary">
                 <i class="fas fa-plus"></i>
                 <span>New Task</span>
@@ -546,7 +558,7 @@
                     boxPadding: 6,
                     usePointStyle: true,
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             let label = context.dataset.label || '';
                             if (label) {
                                 label += ': ';
@@ -662,22 +674,22 @@
         metrics.forEach(metric => {
             const valueElement = metric.querySelector('.text-3xl');
             const changeElement = metric.querySelector('.text-sm');
-            
+
             if (valueElement && changeElement) {
                 // Add small random variations to create live effect
                 const currentValue = parseFloat(valueElement.textContent);
                 const variation = (Math.random() - 0.5) * 2;
                 const newValue = (currentValue + variation).toFixed(1);
-                
+
                 // Update the display with smooth transition
                 valueElement.style.transition = 'color 0.3s ease';
                 valueElement.textContent = newValue + valueElement.textContent.replace(/[\d.-]+/, '');
-                
+
                 // Update trend indicator
                 const trend = variation >= 0 ? 'up' : 'down';
                 const trendIcon = changeElement.querySelector('i');
                 const trendValue = Math.abs(variation).toFixed(1);
-                
+
                 trendIcon.className = `fas fa-arrow-${trend} mr-1`;
                 changeElement.className = `text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'} flex items-center`;
                 changeElement.querySelector('span').textContent = `${trendValue}%`;
@@ -689,11 +701,11 @@
     setInterval(updateMetrics, 5000);
 
     // Greenhouse Zone Selection
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const zoneBoxes = document.querySelectorAll('.zone-box');
         const zoneDetailsTitle = document.querySelector('.zone-details-title');
         const zoneDetailValues = document.querySelectorAll('.zone-detail-value');
-        
+
         // Zone data - would normally come from database
         const zoneData = {
             'A': {
@@ -733,12 +745,12 @@
                 moisture: '43%'
             }
         };
-        
+
         // Function to update zone details
         function updateZoneDetails(zone) {
             const data = zoneData[zone];
             zoneDetailsTitle.textContent = `Zone ${zone} Details`;
-            
+
             // Update all detail values
             zoneDetailValues[0].textContent = data.crop;
             zoneDetailValues[1].textContent = data.irrigation;
@@ -747,16 +759,16 @@
             zoneDetailValues[4].textContent = data.humidity;
             zoneDetailValues[5].textContent = data.moisture;
         }
-        
+
         // Add click event listeners to each zone box
         zoneBoxes.forEach(box => {
-            box.addEventListener('click', function() {
+            box.addEventListener('click', function () {
                 // Remove active class from all boxes
                 zoneBoxes.forEach(b => b.classList.remove('active'));
-                
+
                 // Add active class to clicked box
                 this.classList.add('active');
-                
+
                 // Update zone details
                 const zone = this.getAttribute('data-zone');
                 updateZoneDetails(zone);

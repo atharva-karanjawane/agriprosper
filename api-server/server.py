@@ -11,18 +11,33 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Literal
 from datetime import datetime, timedelta
 import json
-from inference_sdk import InferenceHTTPClient
 import cv2
 import numpy as np
 import pandas as pd
 import joblib 
 from enum import Enum
 from crop_quality import predict_quality
-with open('crop_yield_model.pkl', 'rb') as f:
-    model, feature_names = pickle.load(f)
 
-quality_model = joblib.load('crop_quality_model.pkl')
-scaler = joblib.load('quality_scaler.pkl')
+# Lazy loading of models
+model = None
+feature_names = None
+quality_model = None
+scaler = None
+
+def load_yield_model():
+    global model, feature_names
+    if model is None:
+        with open('crop_yield_model.pkl', 'rb') as f:
+            model, feature_names = pickle.load(f)
+    return model, feature_names
+
+def load_quality_models():
+    global quality_model, scaler
+    if quality_model is None:
+        quality_model = joblib.load('crop_quality_model.pkl')
+    if scaler is None:
+        scaler = joblib.load('quality_scaler.pkl')
+    return quality_model, scaler
 
 class StageData(BaseModel):
     temperature: float = Field(..., ge=18, le=30, description="Temperature in Celsius")
@@ -57,13 +72,22 @@ class PredictionResponse(BaseModel):
 
 class DiseaseDetector:
     def __init__(self):
-        self.client = InferenceHTTPClient(
-            api_url="https://detect.roboflow.com",
-            api_key="HwwpNHzzMg7ajSNvM4NS"
-        )
+        # Lazily initialize the client only when needed
+        self._client = None
         
         self.output_dir = os.path.join(os.getcwd(), 'output')
         os.makedirs(self.output_dir, exist_ok=True)
+
+    @property
+    def client(self):
+        # Lazy initialization of the client
+        if self._client is None:
+            from inference_sdk import InferenceHTTPClient
+            self._client = InferenceHTTPClient(
+                api_url="https://detect.roboflow.com",
+                api_key="HwwpNHzzMg7ajSNvM4NS"
+            )
+        return self._client
 
     def draw_boxes(self, image_path, predictions, output_path):
         image = cv2.imread(image_path)
@@ -173,12 +197,19 @@ app.add_middleware(
 )
 
 detector = DiseaseDetector()
+
+# Register directories after creating them if they don't exist
+UPLOAD_DIR = os.path.join(os.getcwd(), 'uploads')
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 app.mount("/static", StaticFiles(directory="output"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-UPLOAD_DIR = os.path.join(os.getcwd(), 'uploads')
 
 @app.post("/api/predict-yield/", response_model=PredictionResponse)
 async def predict_yield(request: PredictionRequest):
+    # Load model only when needed
+    model, feature_names = load_yield_model()
+    
     plant_density = {
         'NFT': {
             'Tomato': 2, 'Lettuce': 16, 'Basil': 20,
@@ -270,6 +301,7 @@ async def detect_disease_api(file: UploadFile = File(...)):
             "results_json": result['results_file_path']
         }
     }
+    
 @app.get("/debug/check-file/{filename}")
 async def check_file(filename: str):
     output_path = os.path.join("output", filename)
@@ -339,6 +371,9 @@ async def predict_crop_quality(input_data: QualityPredictionInput):
     Returns quality score, category, and recommendations for improvement.
     """
     try:
+        # Load quality models only when needed
+        load_quality_models()
+        
         # Convert Pydantic model to dict
         input_dict = input_data.dict()
         
@@ -353,6 +388,12 @@ async def predict_crop_quality(input_data: QualityPredictionInput):
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
 if __name__ == "__main__":
+    # Create necessary directories
+    os.makedirs("output", exist_ok=True)
+    os.makedirs("uploads", exist_ok=True)
+    
     print("AI Predictions API Server")
     print("Access the Swagger UI at http://localhost:8000/")
-    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
+    
+    # Use less memory-intensive reload options
+    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True, reload_dirs=[os.path.join(os.getcwd(), 'api-server')])

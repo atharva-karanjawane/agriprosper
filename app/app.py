@@ -4,13 +4,13 @@ from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import json
-# from flask_wtf.csrf import CSRFProtect
+import sqlite3
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from database.database import (
     init_db, add_user, get_user_by_phone, update_order_status, update_user_profile, update_zone_data,
     get_all_products, get_product_by_id, create_order, add_order_item,
-    get_customer_orders,get_farmer_products,add_product,get_pending_orders
+    get_customer_orders,get_farmer_products,add_product,get_pending_orders, add_sensor_reading, get_latest_sensor_reading
 )
 
 app = Flask(__name__)
@@ -611,6 +611,101 @@ def order_placed():
 def ai_predictions():
     username = session.get('name','')
     return render_template('predictions.html',username=username)
+
+@app.route('/api/sensor_data', methods=['POST'])
+def receive_sensor_data():
+    """
+    Endpoint to receive sensor data from IoT devices
+    
+    Expected JSON format:
+    {
+        "zone_id": 1,
+        "temperature": 25.5,
+        "humidity": 65.3,
+        "soil_moisture": 42.1,
+        "led_red": 255,
+        "led_green": 128,
+        "led_blue": 64,
+        "pump_status": 1,
+        "mist_maker_status": 0
+    }
+    """
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['zone_id', 'temperature', 'humidity', 'soil_moisture', 
+                          'led_red', 'led_green', 'led_blue', 
+                          'pump_status', 'mist_maker_status']
+        
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Validate value ranges
+        if not (0 <= data['led_red'] <= 255 and 
+                0 <= data['led_green'] <= 255 and 
+                0 <= data['led_blue'] <= 255):
+            return jsonify({'error': 'LED values must be between 0 and 255'}), 400
+            
+        if data['pump_status'] not in [0, 1] or data['mist_maker_status'] not in [0, 1]:
+            return jsonify({'error': 'Pump and mist maker status must be 0 or 1'}), 400
+        
+        # Add sensor reading to database
+        success = add_sensor_reading(
+            zone_id=data['zone_id'],
+            temperature=data['temperature'],
+            humidity=data['humidity'],
+            soil_moisture=data['soil_moisture'],
+            led_red=data['led_red'],
+            led_green=data['led_green'],
+            led_blue=data['led_blue'],
+            pump_status=data['pump_status'],
+            mist_maker_status=data['mist_maker_status']
+        )
+        
+        if success:
+            return jsonify({'status': 'success', 'message': 'Sensor data received and stored'}), 201
+        else:
+            return jsonify({'error': 'Failed to store sensor data'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': f'Error processing request: {str(e)}'}), 500
+
+# You can also add a GET endpoint to retrieve the latest sensor data
+@app.route('/api/sensor_data/<int:zone_id>', methods=['GET'])
+def get_sensor_data(zone_id):
+    """Get the latest sensor data for a specific zone"""
+    data = get_latest_sensor_reading(zone_id)
+    
+    if data:
+        return jsonify(data), 200
+    else:
+        return jsonify({'error': 'No sensor data found for this zone'}), 404
+
+# Add this route to test if your API is working
+@app.route('/api/test_sensor', methods=['GET'])
+def test_sensor():
+    """Test endpoint to verify the sensor API is working"""
+    return jsonify({
+        'status': 'online',
+        'message': 'Sensor API is operational',
+        'endpoints': {
+            'POST /api/sensor_data': 'Submit new sensor readings',
+            'GET /api/sensor_data/{zone_id}': 'Retrieve latest sensor readings for a zone'
+        }
+    }), 200
+
+@app.route('/hardware')
+def hardware():
+    """Route to display the hardware monitoring page"""
+    if 'user_id' not in session:
+        flash("Please login first", "danger")
+        return redirect(url_for('login'))
+    
+    username = session['name']
+    role = session['role']
+    return render_template('hardware.html', username=username, role=role)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,20 @@
+{
+    "inference_id": "b9dd493c-4590-4e35-aaf8-6b862e16fe3d",
+    "time": 0.03274433600017801,
+    "image": {
+        "width": 626,
+        "height": 461
+    },
+    "predictions": [
+        {
+            "x": 244.0,
+            "y": 272.0,
+            "width": 38.0,
+            "height": 22.0,
+            "confidence": 0.4700906276702881,
+            "class": "Tomato leaf bacterial spot",
+            "class_id": 3,
+            "detection_id": "c327f5e0-e7f8-4a33-b0d8-686e3aa9fd9b"
+        }
+    ]
+}
