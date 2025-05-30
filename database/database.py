@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DB_NAME = os.path.join(os.path.dirname(__file__), 'database.db')
 
@@ -235,7 +235,6 @@ def insert_mock_products():
             ))
         conn.commit()
     print("Mock products inserted successfully.")
-# New functions for marketplace functionality
 
 def get_farmer_products(farmer_id):
     with sqlite3.connect(DB_NAME) as conn:
@@ -483,11 +482,16 @@ def create_order(customer_id, total_amount, delivery_address, contact_number, de
     try:
         with sqlite3.connect(DB_NAME) as conn:
             cur = conn.cursor()
+            # Set delivery date to today + 3 days
+            delivery_date = (datetime.today() + timedelta(days=3)).strftime('%Y-%m-%d')
+
+            # Now insert the data into the orders table
             cur.execute("""
                 INSERT INTO orders 
                 (customer_id, total_amount, delivery_address, contact_number, delivery_date, special_instructions)
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (customer_id, total_amount, delivery_address, contact_number, delivery_date, special_instructions))
+            print("order success")
             return cur.lastrowid
     except sqlite3.Error as e:
         print(f"Database error: {e}")

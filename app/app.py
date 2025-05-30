@@ -569,7 +569,20 @@ def order_history():
 @app.route('/order-placed')
 def order_placed():
     username = session.get('name', '')
-    return render_template("order_placed.html",username=username)
+    customer_id = session['user_id']
+    contact_number = session['phone']
+    delivery_address = session['location']
+
+    cart = session.get('cart',{'items': [], 'count': 0, 'total': 0})
+    total_amount = cart['total']
+
+    print('order placed')
+
+    create_order(customer_id, total_amount, delivery_address, contact_number, delivery_date = None, special_instructions=None)
+    session['cart']['count'] = 0
+    session['cart']['total'] = 0
+    session["cart"] = {'items': [], 'count': 0, 'total': 0}
+    return render_template("order_placed.html",username=username, amount=total_amount)
 
 @app.route('/ai-predictions')
 def ai_predictions():
