@@ -52,11 +52,11 @@
         border-radius: 50%;
     }
 
-    .switch-input:checked + .switch-slider {
+    .switch-input:checked+.switch-slider {
         background-color: var(--primary-color);
     }
 
-    .switch-input:checked + .switch-slider:before {
+    .switch-input:checked+.switch-slider:before {
         transform: translateX(24px);
     }
 
@@ -170,9 +170,17 @@
 
     /* Animation for status changes */
     @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
 
     .status-change {
@@ -222,68 +230,112 @@
             <p class="text-gray-600 mt-1">Manage your greenhouse environment and automation</p>
         </div>
         <div class="zone-selector">
-            <button class="zone-option active">Zone A</button>
-            <button class="zone-option">Zone B</button>
-            <button class="zone-option">Zone C</button>
-            <button class="zone-option">All Zones</button>
+            <button class="zone-option active" data-zone="A">Zone A</button>
+            <button class="zone-option" data-zone="B">Zone B</button>
+            <button class="zone-option" data-zone="C">Zone C</button>
+            <button class="zone-option" data-zone="D">Zone D</button>
         </div>
     </div>
 
+    <div id="selected-zone" class="text-sm text-green-600 font-medium mt-2">
+        Currently Selected: <span id="zone-name">Zone A</span>
+    </div>
+
+    <div id="zone-data" class="mt-4 text-gray-700">
+        <!-- Data for the selected zone will appear here -->
+    </div>
+
+
     <!-- Quick Controls Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Temperature Control -->
+
+        <!-- Red Light Control -->
+        <div class="control-card p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb text-red-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-700">Red Light</h3>
+                </div>
+                <div class="switch-container">
+                    <input type="checkbox" class="switch-input" id="redSwitch" checked>
+                    <label class="switch-slider" for="redSwitch"></label>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Current: {{ zone_data.red }}%</span>
+                    <span>Target: <span id="redValue">{{ zone_data.red }}</span>%</span>
+                </div>
+                <input type="range" id="redSlider" class="slider-control" min="0" max="100" value="{{ zone_data.red }}"
+                    oninput="document.getElementById('redValue').innerText = this.value">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>0%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Green Light Control -->
         <div class="control-card p-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
                     <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-temperature-half text-green-600"></i>
+                        <i class="fas fa-lightbulb text-green-600"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-700">Temperature</h3>
+                    <h3 class="font-semibold text-gray-700">Green Light</h3>
                 </div>
                 <div class="switch-container">
-                    <input type="checkbox" class="switch-input" id="tempControl" checked>
-                    <label class="switch-slider" for="tempControl"></label>
+                    <input type="checkbox" class="switch-input" id="greenSwitch" checked>
+                    <label class="switch-slider" for="greenSwitch"></label>
                 </div>
             </div>
             <div class="space-y-4">
                 <div class="flex justify-between items-center text-sm text-gray-600">
-                    <span>Current: 24.5°C</span>
-                    <span>Target: 25°C</span>
+                    <span>Current: {{ zone_data.green }}%</span>
+                    <span>Target: <span id="greenValue">{{ zone_data.green }}</span>%</span>
                 </div>
-                <input type="range" class="slider-control" min="15" max="35" value="25">
+                <input type="range" id="greenSlider" class="slider-control" min="0" max="100"
+                    value="{{ zone_data.green }}"
+                    oninput="document.getElementById('greenValue').innerText = this.value">
                 <div class="flex justify-between text-xs text-gray-500">
-                    <span>15°C</span>
-                    <span>35°C</span>
+                    <span>0%</span>
+                    <span>100%</span>
                 </div>
             </div>
         </div>
 
-        <!-- Humidity Control -->
+
+        <!-- Blue Light Control -->
         <div class="control-card p-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
                     <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-droplet text-blue-600"></i>
+                        <i class="fas fa-lightbulb text-blue-600"></i>
                     </div>
-                    <h3 class="font-semibold text-gray-700">Humidity</h3>
+                    <h3 class="font-semibold text-gray-700">Blue Light</h3>
                 </div>
                 <div class="switch-container">
-                    <input type="checkbox" class="switch-input" id="humidityControl" checked>
-                    <label class="switch-slider" for="humidityControl"></label>
+                    <input type="checkbox" class="switch-input" id="blueSwitch" checked>
+                    <label class="switch-slider" for="blueSwitch"></label>
                 </div>
             </div>
             <div class="space-y-4">
                 <div class="flex justify-between items-center text-sm text-gray-600">
-                    <span>Current: 65%</span>
-                    <span>Target: 70%</span>
+                    <span>Current: {{ zone_data.blue }}%</span>
+                    <span>Target: <span id="blueValue">{{ zone_data.blue }}</span>%</span>
                 </div>
-                <input type="range" class="slider-control" min="40" max="90" value="70">
+                <input type="range" id="blueSlider" class="slider-control" min="0" max="100"
+                    value="{{ zone_data.blue }}" oninput="document.getElementById('blueValue').innerText = this.value">
                 <div class="flex justify-between text-xs text-gray-500">
-                    <span>40%</span>
-                    <span>90%</span>
+                    <span>0%</span>
+                    <span>100%</span>
                 </div>
             </div>
         </div>
+
 
         <!-- Irrigation Control -->
         <div class="control-card p-6">
@@ -295,49 +347,25 @@
                     <h3 class="font-semibold text-gray-700">Irrigation</h3>
                 </div>
                 <div class="switch-container">
-                    <input type="checkbox" class="switch-input" id="irrigationControl">
-                    <label class="switch-slider" for="irrigationControl"></label>
+                    <input type="checkbox" class="switch-input" id="irrigationSwitch" checked>
+                    <label class="switch-slider" for="irrigationSwitch"></label>
                 </div>
             </div>
             <div class="space-y-4">
                 <div class="flex justify-between items-center text-sm text-gray-600">
-                    <span>Last: 2h ago</span>
-                    <span>Next: 4h</span>
+                    <span>Current Rate: {{ zone_data.irrigation }}%</span>
+                    <span>Target: <span id="irrigationValue">{{ zone_data.irrigation }}</span>%</span>
                 </div>
-                <input type="range" class="slider-control" min="0" max="100" value="60">
-                <div class="flex justify-between text-xs text-gray-500">
-                    <span>Flow Rate</span>
-                    <span>2.4 L/min</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lighting Control -->
-        <div class="control-card p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-sun text-yellow-600"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-700">Lighting</h3>
-                </div>
-                <div class="switch-container">
-                    <input type="checkbox" class="switch-input" id="lightingControl" checked>
-                    <label class="switch-slider" for="lightingControl"></label>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center text-sm text-gray-600">
-                    <span>Intensity: 80%</span>
-                    <span>Mode: Auto</span>
-                </div>
-                <input type="range" class="slider-control" min="0" max="100" value="80">
+                <input type="range" id="irrigationSlider" class="slider-control" min="0" max="100"
+                    value="{{ zone_data.irrigation }}"
+                    oninput="document.getElementById('irrigationValue').innerText = this.value">
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>0%</span>
                     <span>100%</span>
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- Automation Rules -->
@@ -390,66 +418,98 @@
                     </div>
                 </div>
                 <div class="mt-3 text-sm text-gray-600">
-                    If soil moisture < 40%, start irrigation for 10 minutes
+                    If soil moisture < 40%, start irrigation for 10 minutes </div>
+                        <div class="mt-2 flex items-center text-xs text-gray-500">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span>Active: 6:00 AM - 6:00 PM</span>
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-bolt mr-1"></i>
+                            <span>Last triggered: 5h ago</span>
+                        </div>
                 </div>
-                <div class="mt-2 flex items-center text-xs text-gray-500">
-                    <i class="fas fa-clock mr-1"></i>
-                    <span>Active: 6:00 AM - 6:00 PM</span>
-                    <span class="mx-2">•</span>
-                    <i class="fas fa-bolt mr-1"></i>
-                    <span>Last triggered: 5h ago</span>
+            </div>
+        </div>
+
+        <!-- Schedule Control -->
+        <div class="control-card p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Daily Schedule</h2>
+                    <p class="text-gray-600 text-sm mt-1">Configure timing for automated tasks</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-copy"></i>
+                        <span>Copy Schedule</span>
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Task</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <!-- Timeline -->
+                <div class="timeline">
+                    {% for hour in range(24) %}
+                    <div class="timeline-hour {% if hour >= 6 and hour <= 18 %}active{% endif %}"
+                        title="{{ '%02d:00'|format(hour) }}"></div>
+                    {% endfor %}
+                </div>
+                <!-- Schedule Legend -->
+                <div class="flex space-x-6 text-sm">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-green-600 rounded mr-2"></div>
+                        <span>Active Hours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-gray-200 rounded mr-2"></div>
+                        <span>Inactive Hours</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endblock %}
 
-    <!-- Schedule Control -->
-    <div class="control-card p-6">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-xl font-semibold text-gray-800">Daily Schedule</h2>
-                <p class="text-gray-600 text-sm mt-1">Configure timing for automated tasks</p>
-            </div>
-            <div class="flex space-x-2">
-                <button class="btn btn-outline">
-                    <i class="fas fa-copy"></i>
-                    <span>Copy Schedule</span>
-                </button>
-                <button class="btn btn-primary">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Task</span>
-                </button>
-            </div>
-        </div>
-        <div class="space-y-6">
-            <!-- Timeline -->
-            <div class="timeline">
-                {% for hour in range(24) %}
-                <div class="timeline-hour {% if hour >= 6 and hour <= 18 %}active{% endif %}"
-                     title="{{ '%02d:00'|format(hour) }}"></div>
-                {% endfor %}
-            </div>
-            <!-- Schedule Legend -->
-            <div class="flex space-x-6 text-sm">
-                <div class="flex items-center">
-                    <div class="w-3 h-3 bg-green-600 rounded mr-2"></div>
-                    <span>Active Hours</span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-3 h-3 bg-gray-200 rounded mr-2"></div>
-                    <span>Inactive Hours</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+    {% block extra_js %}
+    <script>
+        document.getElementById("zoneSelect").addEventListener("change", function () {
+            const selectedZone = this.value;
 
-{% block extra_js %}
-<script>
-    // Initialize all switches
-    document.querySelectorAll('.switch-input').forEach(switchInput => {
-        switchInput.addEventListener('change', function() {
+            fetch("/get_zone_data", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ zone: selectedZone }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    // Update sliders and values
+                    document.getElementById("redSlider").value = data.red;
+                    document.getElementById("greenSlider").value = data.green;
+                    document.getElementById("blueSlider").value = data.blue;
+                    document.getElementById("irrigationSlider").value = data.irrigation;
+
+                    document.getElementById("redValue").textContent = data.red;
+                    document.getElementById("greenValue").textContent = data.green;
+                    document.getElementById("blueValue").textContent = data.blue;
+                    document.getElementById("irrigationValue").textContent = data.irrigation;
+                });
+        });
+
+        function updateDisplay(channel) {
+            const slider = document.getElementById(`${channel}Slider`);
+            const value = slider.value;
+            document.getElementById(`${channel}Value`).textContent = value;
+        }
+    </script>
+
+
+
+    <script>
+  // Initialize all switches
+  document.querySelectorAll('.switch-input').forEach(switchInput => {
+        switchInput.addEventListener('change', function () {
             const card = this.closest('.control-card, .rule-card');
             if (card) {
                 card.classList.add('status-change');
@@ -460,70 +520,46 @@
 
     // Initialize all sliders
     document.querySelectorAll('.slider-control').forEach(slider => {
-        slider.addEventListener('input', function() {
+        slider.addEventListener('input', function () {
             const valueDisplay = this.closest('.space-y-4').querySelector('.flex.justify-between span:last-child');
             if (valueDisplay) {
-                if (this.id === 'tempSlider') {
-                    valueDisplay.textContent = `${this.value}°C`;
-                } else if (this.id === 'humiditySlider') {
-                    valueDisplay.textContent = `${this.value}%`;
-                }
+                valueDisplay.textContent = `${this.value}%`;
             }
         });
     });
 
     // Zone selector functionality
     document.querySelectorAll('.zone-option').forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             document.querySelectorAll('.zone-option').forEach(opt => opt.classList.remove('active'));
             this.classList.add('active');
+
+            const selectedZone = this.dataset.zone;
+            fetch("/get_zone_data", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ zone: selectedZone }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Update slider values
+                document.getElementById("redSlider").value = data.red;
+                document.getElementById("greenSlider").value = data.green;
+                document.getElementById("blueSlider").value = data.blue;
+                document.getElementById("irrigationSlider").value = data.irrigation;
+
+                // Update display values
+                document.getElementById("redValue").textContent = `${data.red}%`;
+                document.getElementById("greenValue").textContent = `${data.green}%`;
+                document.getElementById("blueValue").textContent = `${data.blue}%`;
+                document.getElementById("irrigationValue").textContent = `${data.irrigation}%`;
+            });
         });
     });
 
-    // Timeline hour selection
-    document.querySelectorAll('.timeline-hour').forEach(hour => {
-        hour.addEventListener('click', function() {
-            this.classList.toggle('active');
-        });
+    // Optional: Trigger default zone A on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.zone-option.active')?.click();
     });
-
-    // Simulate real-time updates
-    function updateMetrics() {
-        const metrics = {
-            temperature: {
-                current: 24.5 + (Math.random() - 0.5),
-                target: 25
-            },
-            humidity: {
-                current: 65 + (Math.random() - 0.5) * 2,
-                target: 70
-            },
-            irrigation: {
-                flowRate: 2.4 + (Math.random() - 0.5) * 0.2
-            },
-            lighting: {
-                intensity: 80 + (Math.random() - 0.5) * 2
-            }
-        };
-
-        // Update temperature display
-        document.querySelector('.control-card:nth-child(1) .text-sm.text-gray-600 span:first-child')
-            .textContent = `Current: ${metrics.temperature.current.toFixed(1)}°C`;
-
-        // Update humidity display
-        document.querySelector('.control-card:nth-child(2) .text-sm.text-gray-600 span:first-child')
-            .textContent = `Current: ${metrics.humidity.current.toFixed(1)}%`;
-
-        // Update irrigation display
-        document.querySelector('.control-card:nth-child(3) .text-xs.text-gray-500 span:last-child')
-            .textContent = `${metrics.irrigation.flowRate.toFixed(1)} L/min`;
-
-        // Update lighting display
-        document.querySelector('.control-card:nth-child(4) .text-sm.text-gray-600 span:first-child')
-            .textContent = `Intensity: ${Math.round(metrics.lighting.intensity)}%`;
-    }
-
-    // Update metrics every 3 seconds
-    setInterval(updateMetrics, 3000);
-</script>
-{% endblock %}
+    </script>
+    {% endblock %}

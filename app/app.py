@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 import sys, os, random
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
@@ -76,7 +76,26 @@ def alerts_page():
 @app.route('/controls')
 def controls():
     username = session['name']
-    return render_template('controls.html',username=username)
+    default_zone = 'A'
+    zone_data = get_zone_data(default_zone)
+    return render_template('controls.html', username=username, zone=default_zone, zone_data=zone_data)
+
+def get_zone_data(zone):
+    dummy_data = {
+        "A": {"red": 25.5, "green": 65, "blue": 85, "irrigation": 80},
+        "B": {"red": 22.0, "green": 55, "blue": 45, "irrigation": 70},
+        "C": {"red": 28.4, "green": 60, "blue": 90, "irrigation": 90},
+        "D": {"red": 20.1, "green": 50, "blue": 65, "irrigation": 60},
+    }
+    return dummy_data.get(zone, {})
+
+@app.route("/get_zone_data", methods=["POST"])
+def get_zone_data_route():
+    data = request.get_json()
+    zone = data.get("zone")
+
+    zone_data = get_zone_data(zone)
+    return jsonify(zone_data)
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():

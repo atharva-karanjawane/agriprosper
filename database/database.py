@@ -78,3 +78,6 @@ def update_user_profile(user_id, name, phone, email, bio):
             return True
     except sqlite3.IntegrityError:
         return False
+
+if __name__ == '__main__':
+    init_db()
