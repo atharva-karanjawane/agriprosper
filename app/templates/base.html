@@ -381,6 +381,12 @@
                     <i class="fas fa-tractor"></i>
                     <span>Marketplace - Farmer</span>
                 </a>
+
+                <a href="{{ url_for('ai_predictions') }}"
+                    class="nav-item {% if request.endpoint == 'ai-predictions' %}active{% endif %}">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>AI Predictions</span>
+                </a>
                 {% endif %}
             </nav>
 

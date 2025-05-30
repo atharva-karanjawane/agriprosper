@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware  # Add CORS middleware
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware 
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 import shutil
@@ -8,7 +9,7 @@ import uuid
 import pickle
 from pydantic import BaseModel, Field
 from typing import List, Dict, Literal
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from inference_sdk import InferenceHTTPClient
 import cv2
@@ -83,28 +84,48 @@ class DiseaseDetector:
 
     def detect_diseases(self, image_path):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         result = self.client.infer(
             image_path,
             model_id="plant-diseases-c2yf6-mvmnh/1"
         )
-        
+
+        # Create relative paths for files
         base_filename = f"{timestamp}_disease_detection"
-        annotated_image_path = os.path.join(self.output_dir, f"{base_filename}_annotated.jpg")
-        results_path = os.path.join(self.output_dir, f"{base_filename}_results.json")
-    
+        annotated_image_name = f"{base_filename}_annotated.jpg"
+        results_json_name = f"{base_filename}_results.json"
+
+        annotated_image_path = os.path.join(self.output_dir, annotated_image_name)
+        results_path = os.path.join(self.output_dir, results_json_name)
+
         with open(results_path, 'w') as f:
             json.dump(result, f, indent=4)
-            
+
         self.draw_boxes(image_path, result['predictions'], annotated_image_path)
-        
+
+        # Return paths relative to the static directory
         return {
             'success': True,
             'predictions': result['predictions'],
-            'annotated_image_path': annotated_image_path,
-            'results_file_path': results_path
+            'annotated_image_path': f"/static/{annotated_image_name}",
+            'results_file_path': f"/static/{results_json_name}"
         }
 
+class MaintenanceData(BaseModel):
+    equipment_age: float = Field(..., ge=0, description="Age of equipment in years")
+    temperature: float = Field(..., description="Operating temperature")
+    vibration_level: float = Field(..., ge=0, le=100, description="Vibration level (0-100)")
+    power_consumption: float = Field(..., ge=0, description="Power consumption in kW")
+    humidity_exposure: float = Field(..., ge=0, le=100, description="Humidity exposure level")
+    usage_hours: float = Field(..., ge=0, description="Hours of operation")
+    last_maintenance: float = Field(..., ge=0, description="Days since last maintenance")
+
+class MaintenancePrediction(BaseModel):
+    risk_level: str
+    maintenance_needed: bool
+    recommended_date: str
+    issues: List[str]
+    health_score: float
 
 app = FastAPI(
     title="Plant Disease Detection API",
@@ -116,17 +137,16 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],  
 )
 
 detector = DiseaseDetector()
-
-
+app.mount("/static", StaticFiles(directory="output"), name="static")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 UPLOAD_DIR = os.path.join(os.getcwd(), 'uploads')
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.post("/api/predict-yield/", response_model=PredictionResponse)
 async def predict_yield(request: PredictionRequest):
@@ -204,18 +224,15 @@ async def predict_yield(request: PredictionRequest):
 
 @app.post("/api/detect/", response_class=JSONResponse)
 async def detect_disease_api(file: UploadFile = File(...)):
-    """
-    Upload a plant image to detect diseases
-    """
     file_extension = os.path.splitext(file.filename)[1]
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     file_path = os.path.join(UPLOAD_DIR, unique_filename)
-    
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    
+
     result = detector.detect_diseases(file_path)
-    
+
     return {
         "success": True,
         "predictions": result['predictions'],
@@ -224,8 +241,68 @@ async def detect_disease_api(file: UploadFile = File(...)):
             "results_json": result['results_file_path']
         }
     }
+@app.get("/debug/check-file/{filename}")
+async def check_file(filename: str):
+    output_path = os.path.join("output", filename)
+    if os.path.exists(output_path):
+        return {
+            "exists": True,
+            "size": os.path.getsize(output_path),
+            "path": output_path
+        }
+    return {"exists": False}
+
+@app.post("/api/predict-maintenance/", response_model=MaintenancePrediction)
+async def predict_maintenance(data: MaintenanceData):
+    # Simple rule-based system for demo
+    # In production, you'd use a trained model
+    health_score = 100.0
+    issues = []
+
+    # Age impact
+    if data.equipment_age > 5:
+        health_score -= 15
+        issues.append("Equipment age above recommended")
+
+    # Temperature impact
+    if data.temperature > 35:
+        health_score -= 10
+        issues.append("High operating temperature")
+
+    # Vibration impact
+    if data.vibration_level > 70:
+        health_score -= 20
+        issues.append("High vibration levels")
+
+    # Power consumption impact
+    if data.power_consumption > 10:
+        health_score -= 10
+        issues.append("High power consumption")
+
+    # Maintenance impact
+    if data.last_maintenance > 90:
+        health_score -= 15
+        issues.append("Maintenance overdue")
+
+    # Calculate risk level
+    risk_level = "Low" if health_score >= 80 else "Medium" if health_score >= 60 else "High"
+
+    # Determine if maintenance is needed
+    maintenance_needed = health_score < 70
+
+    # Calculate recommended maintenance date
+    days_until_maintenance = max(0, int((70 - health_score) / 2))
+    recommended_date = (datetime.now() + timedelta(days=days_until_maintenance)).strftime("%Y-%m-%d")
+
+    return MaintenancePrediction(
+        risk_level=risk_level,
+        maintenance_needed=maintenance_needed,
+        recommended_date=recommended_date,
+        issues=issues,
+        health_score=round(health_score, 2)
+    )
 
 if __name__ == "__main__":
-    print("Plant Disease Detection API Server")
+    print("AI Predictions API Server")
     print("Access the Swagger UI at http://localhost:8000/")
     uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)

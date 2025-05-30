@@ -511,5 +511,9 @@ def order_placed():
     username = session.get('name', '')
     return render_template("order_placed.html",username=username)
 
+@app.route('/ai-predictions')
+def ai_predictions():
+    username = session.get('name','')
+    return render_template('predictions.html',username=username)
 if __name__ == '__main__':
     app.run(debug=True)
