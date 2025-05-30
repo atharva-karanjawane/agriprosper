@@ -1,5 +1,5 @@
 # Agri Prosper - Smart Greenhouse Management Made Simple
-## [Dashboard](https://agriprosper-1kok.onrender.com/)
+## [Click Here to Visit --> Dashboard](https://agriprosper-1kok.onrender.com/)
 
 ## Overview
 
