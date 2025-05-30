@@ -2,12 +2,13 @@ from flask import Flask, jsonify, render_template, request, redirect, url_for, s
 import sys, os, random
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from database.database import (
     init_db, add_user, get_user_by_phone, update_user_profile, update_zone_data,
     get_all_products, get_product_by_id, create_order, add_order_item,
-    get_customer_orders
+    get_customer_orders,get_farmer_products,add_product
 )
 
 app = Flask(__name__)
@@ -185,10 +186,69 @@ def marketplace_farmer():
     if 'user_id' not in session:
         flash("Please login first", "danger")
         return redirect(url_for('login'))
+    
+    
+    products = get_farmer_products(session["user_id"])
+    
+    # Calculate tomorrow's date for delivery date input
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow_date = tomorrow.strftime('%Y-%m-%d')
+    
+    # return render_template('marketplace_consumer.html',)
+
     username = session['name']
     role = session['role']
-    return render_template("marketplace_farmer.html", username=username,role=role)
+    return render_template("marketplace_farmer.html",
+                            username=username,
+                          products=products, 
+                          tomorrow_date=tomorrow_date,
+                          role=role)
 
+@app.route('/add-product-farmer', methods=['POST'])
+def add_product_farmer():
+    farmer_id = session.get('user_id')
+    if not farmer_id:
+        return redirect(url_for('login'))
+
+    # Get form data
+    zone_id = request.form.get('zone_id')
+    name = request.form.get('name')
+    category = request.form.get('category')
+    description = request.form.get('description')
+    price = request.form.get('price')
+    unit = request.form.get('unit')
+    quantity = request.form.get('quantity')
+    quality_score = request.form.get('quality_score')
+    harvest_date = request.form.get('harvest_date')
+
+    # Handle image upload
+    image = request.files.get('image')
+    image_path = None
+
+    if image and image.filename != '':
+        filename = secure_filename(image.filename)
+        upload_folder = 'static/uploads'
+        os.makedirs(upload_folder, exist_ok=True)
+        image_path = os.path.join(upload_folder, filename)
+        image.save(image_path)
+
+    add_product(
+        farmer_id=farmer_id,
+        zone_id=zone_id,
+        name=name,
+        category=category,
+        description=description,
+        price=price,
+        unit=unit,
+        quantity=quantity,
+        quality_score=quality_score,
+        harvest_date=harvest_date,
+        image_path=image_path
+    )
+
+    # Redirect to the dashboard or same page
+    return redirect(url_for('marketplace_farmer'))
+ 
 # Updated marketplace route with product loading
 @app.route('/marketplace')
 @app.route('/marketplace-user')

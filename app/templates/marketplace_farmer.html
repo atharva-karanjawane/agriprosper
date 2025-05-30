@@ -559,8 +559,8 @@
                     {% for product in products %}
                         <div class="product-card">
                             <div class="relative">
-                                {% if product.image_path %}
-                                    <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" class="product-image">
+                                {% if product.name %}
+                                    <img src="{{ url_for('static', filename='/images/'+product.name+'.jpg') }}" alt="{{ product.name }}" class="product-image">
                                 {% else %}
                                     <div class="product-image flex items-center justify-center">
                                         <i class="fas fa-seedling text-5xl text-green-300"></i>
@@ -597,7 +597,7 @@
                                         <span>Available: {{ product.quantity_available }} {{ product.unit }}</span>
                                     </div>
                                 </div>
-                                <div class="product-price">${{ product.price }}/{{ product.unit }}</div>
+                                <div class="product-price">₹{{ product.price }}/{{ product.unit }}</div>
                                 <div class="product-actions">
                                     <button class="btn btn-outline flex-1 edit-product-btn" data-product-id="{{ product.product_id }}">
                                         <i class="fas fa-edit"></i>
@@ -665,13 +665,13 @@
                                         <div class="item-name">{{ item.product_name }}</div>
                                         <div class="item-quantity">{{ item.quantity }} {{ item.unit }}</div>
                                     </div>
-                                    <div class="item-price">${{ item.subtotal }}</div>
+                                    <div class="item-price">₹{{ item.subtotal }}</div>
                                 </div>
                             {% endfor %}
                         </div>
                         <div class="order-total">
                             <span>Total</span>
-                            <span>${{ order.total_amount }}</span>
+                            <span>₹{{ order.total_amount }}</span>
                         </div>
                         {% if order.special_instructions %}
                             <div class="mt-4 text-sm text-gray-600">
@@ -717,14 +717,14 @@
         <div class="tab-content" id="add-product-tab">
             <div class="form-container">
                 <h3 class="form-title">Add New Product</h3>
-                <form id="add-product-form" action="{{ url_for('dashboard') }}" method="post" enctype="multipart/form-data">
+                <form id="add-product-form" action="{{ url_for('add_product_farmer') }}" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="form-label">Select Greenhouse Zone (Optional)</label>
                         <div class="zone-selector">
-                            {% for zone in zones %}
+                            {% for z in zones %}
                                 <div class="zone-box" data-zone-id="{{ zone.zone_id }}">
-                                    <div class="zone-label">{{ zone.zone_label }}</div>
-                                    <div class="zone-info">{{ zone.crop_type }}</div>
+                                    <div class="zone-label">{{ z.zone_label }}</div>
+                                    <div class="zone-info">{{ z.crop_type }}</div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -891,6 +891,26 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    document.querySelectorAll('.zone-box').forEach(box => {
+        box.addEventListener('click', function () {
+            const selectedId = this.getAttribute('data-zone-id');
+            document.getElementById('selected-zone-id').value = selectedId;
+
+            // Optional: Add UI feedback
+            document.querySelectorAll('.zone-box').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+</script>
+
+<style>
+    .zone-box.selected {
+        border: 2px solid green;
+        background-color: #e6ffe6;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Tab Switching
