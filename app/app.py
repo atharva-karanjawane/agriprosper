@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import json
-from flask_wtf.csrf import CSRFProtect
+# from flask_wtf.csrf import CSRFProtect
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from database.database import (
@@ -15,7 +15,7 @@ from database.database import (
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 
 init_db()
 

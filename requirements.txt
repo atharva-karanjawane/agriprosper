@@ -1,3 +1,13 @@
-flask
-Fastapi
-flask_login
+Flask==2.2.2
+Flask-WTF==1.0.0
+Werkzeug==2.2.2
+sqlite3==3.36.0
+fastapi==0.85.1
+uvicorn==0.18.2
+pydantic==1.10.2
+inference-sdk==0.1.0
+opencv-python==4.6.0.66
+numpy==1.24.2
+pandas==1.5.3
+shutil==1.0.0
+json==2.0.9

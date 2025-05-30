@@ -930,8 +930,7 @@ document.querySelectorAll('.confirm-order-btn').forEach(button => {
         fetch(`/confirm-order/${orderId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token() }}'  // if using CSRF
+                'Content-Type': 'application/json'
             }
         })
         .then(response => {
