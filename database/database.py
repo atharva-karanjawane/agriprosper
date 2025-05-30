@@ -855,10 +855,10 @@ def initialize_default_zones():
             return False
     except sqlite3.Error as e:
         print(f"Database error while initializing default zones: {e}")
+ 
         return False
-
-if __name__ == '__main__':
-    init_db()
-    plant_lifecyle_static()
-    insert_mock_products()
-    initialize_default_zones()
+    
+init_db()
+plant_lifecyle_static()
+insert_mock_products()
+initialize_default_zones()

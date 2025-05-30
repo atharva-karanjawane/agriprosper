@@ -105,9 +105,8 @@ After setting up Agri Prosper, you can interact with the application through the
 
 **Team Members**:
 
-- [Divesh Adivarekar](https://github.com/diveshadivarekar)
 - [Atharva Karanjawane](https://github.com/atharva-karanjawane)
-- [Vedant Charegaonkar](https://github.com/)
+- [Vedant Charegaonkar](https://github.com/vecvedant)
 
 We would like to acknowledge the contributions of everyone involved in this project. The collective effort has made **Agri Prosper** possible and impactful in the agricultural technology space.
 
@@ -124,7 +123,4 @@ We welcome contributions! If you find any bugs or have suggestions for new featu
 
 ---
 
-## Future Enhancements
 
-* **Advanced AI Models**: Incorporate more sophisticated AI models for disease detection and crop yield prediction.
-* **Multi-Greenhouse Management**: Extend the system to manage multiple greenhouses for large-scale operations.
