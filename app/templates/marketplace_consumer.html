@@ -391,7 +391,7 @@
                             <span>Origin: {{ product.farm_location }}</span>
                         </div>
                     </div>
-                    <div class="product-price">${{ "%.2f"|format(product.price) }}/{{ product.unit }}</div>
+                    <div class="product-price">₹{{ "%.2f"|format(product.price) }}/{{ product.unit }}</div>
                     <div class="product-actions">
                         <div class="quantity-input">
                             <div class="quantity-btn decrease-btn"><i class="fas fa-minus"></i></div>
@@ -425,7 +425,7 @@
         </div>
         <div class="cart-details">
             <div class="cart-count">0 items</div>
-            <div class="cart-total">Total: $0.00</div>
+            <div class="cart-total">Total: ₹0.00</div>
         </div>
         <a href="{{ url_for('order_placed') }}" class="btn btn-primary checkout-btn" disabled>
             <span>Confirm Order</span>
@@ -490,7 +490,7 @@
         
         function updateCart() {
             cartCount.textContent = `${cart.count} ${cart.count === 1 ? 'item' : 'items'}`;
-            cartTotal.textContent = `Total: $${cart.total.toFixed(2)}`;
+            cartTotal.textContent = `Total: ₹${cart.total.toFixed(2)}`;
             if (cart.count > 0) {
                 checkoutBtn.removeAttribute('disabled');
             } else {

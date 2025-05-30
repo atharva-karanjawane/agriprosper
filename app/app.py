@@ -31,7 +31,8 @@ def dashboard():
         flash("Please login first", "danger")
         return redirect(url_for('login'))
     username = session['name']
-    return render_template('dashboard.html', username=username)
+    role = session['role']
+    return render_template('dashboard.html', username=username,role=role)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -49,7 +50,10 @@ def login():
             session['latitude'] = user[6]
             session['longitude'] = user[7]
             session['bio'] = user[8]
+            session['role'] = user[9]
 
+            if session['role'] != 'farmer': 
+                return redirect(url_for('marketplace_user'))
             return redirect(url_for('dashboard'))
         else:
             flash("Invalid phone number or password", "danger")
@@ -65,8 +69,9 @@ def register():
         location = request.form['location']
         latitude = request.form['latitude']
         longitude = request.form['longitude']
+        role = request.form['role']
 
-        if add_user(name, phone, password, location, latitude, longitude):
+        if add_user(name, phone, password, location, latitude, longitude, role):
             flash("Registration successful! Please login.", "success")
             return redirect(url_for('login'))
         else:
@@ -80,7 +85,8 @@ def analytics():
         flash("Please login first", "danger")
         return redirect(url_for('login'))
     username = session['name']
-    return render_template('analytics.html', username=username)
+    role = session['role']
+    return render_template('analytics.html', username=username, role=role)
 
 @app.route('/alerts')
 def alerts_page():
@@ -88,7 +94,8 @@ def alerts_page():
         flash("Please login first", "danger")
         return redirect(url_for('login'))
     username = session['name']
-    return render_template('alerts.html', username=username)
+    role = session['role']
+    return render_template('alerts.html', username=username, role=role)
 
 @app.route('/controls')
 def controls():
@@ -96,9 +103,10 @@ def controls():
         flash("Please login first", "danger")
         return redirect(url_for('login'))
     username = session['name']
+    role = session['role']
     default_zone = 'A'
     zone_data = get_zone_data(default_zone)
-    return render_template('controls.html', username=username, zone=default_zone, zone_data=zone_data)
+    return render_template('controls.html', username=username, zone=default_zone, zone_data=zone_data, role=role)
 
 def get_zone_data(zone):
     dummy_data = {
@@ -128,6 +136,7 @@ def profile():
     location = session.get('location', 'New York')
     email = session.get('email', 'email@example.com')
     bio = session.get('bio', 'This is your bio.')
+    role = session.get('role')
 
     if request.method == 'POST':
         form_type = request.form.get('form_type')
@@ -169,7 +178,7 @@ def profile():
             flash("Zone configuration saved.", "success")
             return redirect(url_for('profile'))
 
-    return render_template('profile.html', username=username, phoneno=phoneno, location=location, email=email, bio=bio)
+    return render_template('profile.html', username=username, phoneno=phoneno, location=location, email=email, bio=bio, role=role)
 
 @app.route('/marketplace-farmer')
 def marketplace_farmer():
@@ -177,14 +186,15 @@ def marketplace_farmer():
         flash("Please login first", "danger")
         return redirect(url_for('login'))
     username = session['name']
-    return render_template("marketplace_farmer.html", username=username)
+    role = session['role']
+    return render_template("marketplace_farmer.html", username=username,role=role)
 
 # Updated marketplace route with product loading
 @app.route('/marketplace')
 @app.route('/marketplace-user')
 def marketplace_user():
     username = session.get('name', '')
-    
+    role = session['role']
     # Get filter parameters
     category = request.args.get('category', '')
     sort_by = request.args.get('sort', '')
@@ -201,7 +211,8 @@ def marketplace_user():
                           products=products, 
                           tomorrow_date=tomorrow_date,
                           category=category,
-                          sort_by=sort_by)
+                          sort_by=sort_by,
+                          role=role)
 
 @app.route('/logout')
 def logout():
@@ -283,8 +294,7 @@ def add_to_cart():
     # Save cart to session
     session['cart'] = cart
     session.modified = True
-    print(session[cart])
-    print(cart)
+
     return jsonify({
         'success': True, 
         'cart_count': cart['count'],

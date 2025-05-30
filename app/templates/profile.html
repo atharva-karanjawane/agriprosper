@@ -281,7 +281,7 @@
                     {% endif %}
                 </div>
                 <h1 class="text-2xl font-semibold">{{ username }}</h1>
-                <p class="text-white text-opacity-90 mt-1">Administrator</p>
+                <p class="text-white text-opacity-90 mt-1">{{ role }}</p>
                 <div class="flex items-center mt-4 space-x-2">
                     {% if email %}
                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
@@ -340,7 +340,7 @@
                     </div>
                     <div class="input-group">
                         <label class="input-label">Role</label>
-                        <input type="text" class="input-field" value="Administrator" disabled>
+                        <input type="text" class="input-field" value="{{ role }}" disabled>
                     </div>
                     <div class="input-group">
                         <label class="input-label">Location</label>
