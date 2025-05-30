@@ -1,5 +1,6 @@
 # Agri Prosper - Smart Greenhouse Management Made Simple
-## [Dashbaord]([https://github.com/atharva-karanjawane](https://agriprosper-1kok.onrender.com/))
+## Dashboard
+[Link]([https://github.com/atharva-karanjawane](https://agriprosper-1kok.onrender.com/))
 ## Overview
 
 **Agri Prosper** is an advanced Smart Greenhouse Management solution designed to help farmers optimize the growth of their crops through intelligent systems. This web application combines environmental control with plant disease detection, crop yield prediction, and advanced lighting management. With its intuitive interface and powerful backend, Agri Prosper is perfect for greenhouse owners who want to ensure the best conditions for their crops, improve productivity, and reduce manual intervention.
