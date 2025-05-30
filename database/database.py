@@ -553,6 +553,18 @@ def get_customer_orders(customer_id):
             
         return result
 
+def get_pending_orders():
+    """Fetch all orders with 'pending' status"""
+    with sqlite3.connect(DB_NAME) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM orders
+            WHERE status = 'pending'
+            ORDER BY order_date DESC
+        """)
+        return cur.fetchall()
+
 if __name__ == '__main__':
     init_db()
     plant_lifecyle_static()

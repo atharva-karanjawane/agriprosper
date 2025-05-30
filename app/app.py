@@ -3,12 +3,13 @@ import sys, os, random
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from database.database import (
     init_db, add_user, get_user_by_phone, update_user_profile, update_zone_data,
     get_all_products, get_product_by_id, create_order, add_order_item,
-    get_customer_orders,get_farmer_products,add_product
+    get_customer_orders,get_farmer_products,add_product,get_pending_orders
 )
 
 app = Flask(__name__)
@@ -181,6 +182,14 @@ def profile():
 
     return render_template('profile.html', username=username, phoneno=phoneno, location=location, email=email, bio=bio, role=role)
 
+@app.route('/schemes')
+def schemes():
+    with open(os.path.join('static', 'data', 'schemes.json')) as f:
+        schemes = json.load(f)
+    username=session['name']
+    role = session['role']
+    return render_template('schemes.html', schemes=schemes,username=username,role=role)
+
 @app.route('/marketplace-farmer')
 def marketplace_farmer():
     if 'user_id' not in session:
@@ -198,11 +207,16 @@ def marketplace_farmer():
 
     username = session['name']
     role = session['role']
+
+    pending_orders = get_pending_orders()
+    # for order in pending_orders:
+    #     print(order['order_id'], order['delivery_address'], order['delivery_date'])
+
     return render_template("marketplace_farmer.html",
                             username=username,
                           products=products, 
                           tomorrow_date=tomorrow_date,
-                          role=role)
+                          role=role,orders=pending_orders)
 
 @app.route('/add-product-farmer', methods=['POST'])
 def add_product_farmer():
@@ -588,5 +602,6 @@ def order_placed():
 def ai_predictions():
     username = session.get('name','')
     return render_template('predictions.html',username=username)
+
 if __name__ == '__main__':
     app.run(debug=True)

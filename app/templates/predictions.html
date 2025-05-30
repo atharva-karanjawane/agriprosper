@@ -62,57 +62,58 @@
         background: rgba(239, 68, 68, 0.1);
         color: var(--danger-color);
     }
-    /* Add to your existing CSS */
-.result-card img {
-    max-height: 300px;
-    object-fit: contain;
-    width: 100%;
-    border: 1px solid rgba(34, 197, 94, 0.1);
-    border-radius: 8px;
-}
 
-.prediction-confidence {
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 999px;
-}
+    .result-card img {
+        max-height: 300px;
+        object-fit: contain;
+        width: 100%;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        border-radius: 8px;
+    }
 
-.prediction-high {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: rgb(239, 68, 68);
-}
+    .prediction-confidence {
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 999px;
+    }
 
-.prediction-medium {
-    background-color: rgba(245, 158, 11, 0.1);
-    color: rgb(245, 158, 11);
-}
+    .prediction-high {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: rgb(239, 68, 68);
+    }
 
-.prediction-low {
-    background-color: rgba(34, 197, 94, 0.1);
-    color: rgb(34, 197, 94);
-}
-.recommendation-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid rgba(34, 197, 94, 0.1);
-}
+    .prediction-medium {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: rgb(245, 158, 11);
+    }
 
-.recommendation-card:last-child {
-    margin-bottom: 0;
-}
+    .prediction-low {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: rgb(34, 197, 94);
+    }
 
-.recommendation-card ul li {
-    position: relative;
-    padding-left: 1.5rem;
-}
+    .recommendation-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
 
-.recommendation-card ul li i {
-    position: absolute;
-    left: 0;
-    top: 0.25rem;
-}
+    .recommendation-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .recommendation-card ul li {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .recommendation-card ul li i {
+        position: absolute;
+        left: 0;
+        top: 0.25rem;
+    }
 </style>
 {% endblock %}
 
@@ -127,119 +128,333 @@
     </div>
 
     <!-- AI Features Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Disease Detection -->
-        <div class="prediction-card p-6">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-microscope text-green-600 text-xl"></i>
+    <div class="space-y-6">
+        <!-- First row with 3 cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Disease Detection -->
+            <div class="prediction-card p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-microscope text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 ml-4">Disease Detection</h3>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-800 ml-4">Disease Detection</h3>
-            </div>
-            
-            <div class="upload-zone" id="diseaseUploadZone">
-                <input type="file" id="diseaseInput" class="hidden" accept="image/*">
-                <i class="fas fa-cloud-upload-alt text-4xl text-green-600 mb-4"></i>
-                <p class="text-gray-600">Drop your plant image here or click to upload</p>
+                
+                <div class="upload-zone" id="diseaseUploadZone">
+                    <input type="file" id="diseaseInput" class="hidden" accept="image/*">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-green-600 mb-4"></i>
+                    <p class="text-gray-600">Drop your plant image here or click to upload</p>
+                </div>
+
+                <div id="diseaseResult" class="result-card mt-4 hidden">
+                    <h4 class="font-semibold text-gray-800 mb-3">Detection Results</h4>
+                    <div id="diseaseDetails"></div>
+                </div>
             </div>
 
-            <div id="diseaseResult" class="result-card mt-4 hidden">
-                <h4 class="font-semibold text-gray-800 mb-3">Detection Results</h4>
-                <div id="diseaseDetails"></div>
+            <!-- Crop Quality Test -->
+            <div class="prediction-card p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-leaf text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 ml-4">Crop Quality</h3>
+                </div>
+
+                <form id="qualityForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Crop Type</label>
+                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option>Tomato</option>
+                            <option>Lettuce</option>
+                            <option>Cucumber</option>
+                            <option>Basil</option>
+                            <option>Spinach</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Growth Stage</label>
+                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option>Germination</option>
+                            <option>Vegetative</option>
+                            <option>Flowering</option>
+                            <option>Fruiting</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full">
+                        Analyze Quality
+                    </button>
+                </form>
+
+                <div id="qualityResult" class="result-card mt-4 hidden">
+                    <div class="health-indicator health-good mb-4">95%</div>
+                    <h4 class="font-semibold text-gray-800 mb-2 text-center">Excellent Quality</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Optimal growth rate</li>
+                        <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Healthy nutrient levels</li>
+                        <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Good color and texture</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Predictive Maintenance -->
+            <div class="prediction-card p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-tools text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 ml-4">Predictive Maintenance</h3>
+                </div>
+
+                <form id="maintenanceForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Equipment Age (years)</label>
+                        <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" min="0" step="0.5">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Last Maintenance (days ago)</label>
+                        <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" min="0">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Operating Temperature (°C)</label>
+                        <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full">
+                        Check Maintenance Status
+                    </button>
+                </form>
+
+                <div id="maintenanceResult" class="result-card mt-4 hidden">
+                    <div class="health-indicator health-warning mb-4">
+                        <i class="fas fa-wrench text-3xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2 text-center">Maintenance Recommended</h4>
+                    <div class="text-sm text-gray-600 space-y-2">
+                        <p><i class="fas fa-calendar-alt mr-2"></i>Next service: <span class="font-medium">2023-05-20</span></p>
+                        <p><i class="fas fa-chart-line mr-2"></i>Health score: <span class="font-medium">75%</span></p>
+                        <div class="mt-3">
+                            <p class="font-medium mb-1">Issues detected:</p>
+                            <ul class="list-disc list-inside space-y-1 text-gray-500">
+                                <li>High operating temperature</li>
+                                <li>Routine maintenance due</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Crop Quality Test -->
+        <!-- Crop Yield Predictor -->
         <div class="prediction-card p-6">
             <div class="flex items-center mb-4">
                 <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-leaf text-green-600 text-xl"></i>
+                    <i class="fas fa-seedling text-green-600 text-xl"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-800 ml-4">Crop Quality</h3>
+                <h3 class="text-lg font-semibold text-gray-800 ml-4">Crop Yield Predictor</h3>
             </div>
 
-            <form id="qualityForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Crop Type</label>
-                    <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option>Tomato</option>
-                        <option>Lettuce</option>
-                        <option>Cucumber</option>
-                        <option>Basil</option>
-                        <option>Spinach</option>
-                    </select>
+            <form id="yieldForm" class="space-y-4">
+                <!-- Basic Settings -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Crop Type</label>
+                        <select id="cropType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="Tomato">Tomato</option>
+                            <option value="Lettuce">Lettuce</option>
+                            <option value="Basil">Basil</option>
+                            <option value="Spinach">Spinach</option>
+                            <option value="Cucumber">Cucumber</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Growing System</label>
+                        <select id="growingSystem" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="NFT">NFT</option>
+                            <option value="DWC">DWC</option>
+                            <option value="Vertical">Vertical</option>
+                            <option value="Traditional">Traditional</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Growth Stage</label>
-                    <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option>Germination</option>
-                        <option>Vegetative</option>
-                        <option>Flowering</option>
-                        <option>Fruiting</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700">Greenhouse Area (m²)</label>
+                    <input type="number" id="greenhouseArea" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                        min="1" step="0.1" value="1" required>
+                </div>
+
+                <!-- Growth Stages -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Germination Stage -->
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-3">Germination Stage</h4>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">Temperature (°C)</label>
+                                    <input type="number" id="germination_temp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="18" min="15" max="35" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">Humidity (%)</label>
+                                    <input type="number" id="germination_humidity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="40" min="30" max="90" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Red</label>
+                                    <input type="number" id="germination_led_r" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Green</label>
+                                    <input type="number" id="germination_led_g" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Blue</label>
+                                    <input type="number" id="germination_led_b" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vegetative Stage -->
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-3">Vegetative Stage</h4>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">Temperature (°C)</label>
+                                    <input type="number" id="vegetative_temp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="18" min="15" max="35" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">Humidity (%)</label>
+                                    <input type="number" id="vegetative_humidity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="40" min="30" max="90" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Red</label>
+                                    <input type="number" id="vegetative_led_r" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Green</label>
+                                    <input type="number" id="vegetative_led_g" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Blue</label>
+                                    <input type="number" id="vegetative_led_b" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flowering Stage -->
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-3">Flowering Stage</h4>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">Temperature (°C)</label>
+                                    <input type="number" id="flowering_temp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="18" min="15" max="35" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">Humidity (%)</label>
+                                    <input type="number" id="flowering_humidity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="40" min="30" max="90" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Red</label>
+                                    <input type="number" id="flowering_led_r" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Green</label>
+                                    <input type="number" id="flowering_led_g" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Blue</label>
+                                    <input type="number" id="flowering_led_b" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fruiting Stage -->
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-medium text-gray-700 mb-3">Fruiting Stage</h4>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">Temperature (°C)</label>
+                                    <input type="number" id="fruiting_temp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="18" min="15" max="35" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">Humidity (%)</label>
+                                    <input type="number" id="fruiting_humidity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="40" min="30" max="90" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Red</label>
+                                    <input type="number" id="fruiting_led_r" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Green</label>
+                                    <input type="number" id="fruiting_led_g" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600">LED Blue</label>
+                                    <input type="number" id="fruiting_led_b" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                        value="100" min="0" max="100" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-full">
-                    Analyze Quality
+                    Predict Yield
                 </button>
             </form>
 
-            <div id="qualityResult" class="result-card mt-4 hidden">
-                <div class="health-indicator health-good mb-4">95%</div>
-                <h4 class="font-semibold text-gray-800 mb-2 text-center">Excellent Quality</h4>
-                <ul class="text-sm text-gray-600 space-y-2">
-                    <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Optimal growth rate</li>
-                    <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Healthy nutrient levels</li>
-                    <li><i class="fas fa-check-circle text-green-600 mr-2"></i>Good color and texture</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Predictive Maintenance -->
-        <div class="prediction-card p-6">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-tools text-green-600 text-xl"></i>
+            <div id="yieldResult" class="result-card mt-4 hidden">
+                <div class="text-center">
+                    <div class="health-indicator health-good mb-4">
+                        <span id="totalYield">0</span>g
+                    </div>
+                    <h4 class="font-semibold text-gray-800">Predicted Total Yield</h4>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-800 ml-4">Predictive Maintenance</h3>
-            </div>
-
-            <form id="maintenanceForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Equipment Age (years)</label>
-                    <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" min="0" step="0.5">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Last Maintenance (days ago)</label>
-                    <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" min="0">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Operating Temperature (°C)</label>
-                    <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
-
-                <button type="submit" class="btn btn-primary w-full">
-                    Check Maintenance Status
-                </button>
-            </form>
-
-            <div id="maintenanceResult" class="result-card mt-4 hidden">
-                <div class="health-indicator health-warning mb-4">
-                    <i class="fas fa-wrench text-3xl"></i>
-                </div>
-                <h4 class="font-semibold text-gray-800 mb-2 text-center">Maintenance Recommended</h4>
-                <div class="text-sm text-gray-600 space-y-2">
-                    <p><i class="fas fa-calendar-alt mr-2"></i>Next service: <span class="font-medium">2023-05-20</span></p>
-                    <p><i class="fas fa-chart-line mr-2"></i>Health score: <span class="font-medium">75%</span></p>
-                    <div class="mt-3">
-                        <p class="font-medium mb-1">Issues detected:</p>
-                        <ul class="list-disc list-inside space-y-1 text-gray-500">
-                            <li>High operating temperature</li>
-                            <li>Routine maintenance due</li>
-                        </ul>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-gray-50 rounded-lg text-center">
+                        <div class="text-xl font-bold text-gray-800 mb-1" id="yieldPerPlant">0</div>
+                        <div class="text-sm text-gray-600">Yield per Plant (g)</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-lg text-center">
+                        <div class="text-xl font-bold text-gray-800 mb-1" id="totalPlants">0</div>
+                        <div class="text-sm text-gray-600">Total Plants</div>
                     </div>
                 </div>
             </div>
@@ -247,7 +462,6 @@
     </div>
 </div>
 {% endblock %}
-
 {% block extra_js %}
 <script>
 // Disease Detection
@@ -302,7 +516,7 @@ function handleDiseaseImage(file) {
         return response.json();
     })
     .then(data => {
-        console.log('API Response:', data); // Debug log
+        console.log('API Response:', data);
         displayDiseaseResults(data);
     })
     .catch(error => {
@@ -331,7 +545,7 @@ function displayDiseaseResults(data) {
         // Convert grouped predictions back to array and sort by confidence
         const uniquePredictions = Object.values(groupedPredictions)
             .sort((a, b) => b.confidence - a.confidence);
-        console.log(data)
+
         let resultsHtml = `
             <div class="space-y-4">
                 <!-- Annotated Image -->
@@ -472,27 +686,147 @@ function getDetailedRecommendation(diseaseType) {
     `;
 }
 
+// Predictive Maintenance
+const maintenanceForm = document.getElementById('maintenanceForm');
+const maintenanceResult = document.getElementById('maintenanceResult');
 
-    function displayMaintenanceResults(data) {
-        const indicator = maintenanceResult.querySelector('.health-indicator');
-        const healthScore = maintenanceResult.querySelector('span:contains("Health score")');
-        const nextService = maintenanceResult.querySelector('span:contains("Next service")');
-        const issuesList = maintenanceResult.querySelector('ul');
+maintenanceForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    // Gather form data
+    const formData = {
+        equipment_age: parseFloat(maintenanceForm.querySelector('input[type="number"]').value),
+        last_maintenance: parseInt(maintenanceForm.querySelectorAll('input[type="number"]')[1].value),
+        temperature: parseFloat(maintenanceForm.querySelectorAll('input[type="number"]')[2].value),
+        vibration_level: 50,
+        power_consumption: 8,
+        humidity_exposure: 65,
+        usage_hours: 2000
+    };
 
-        // Update health indicator class
-        indicator.className = 'health-indicator ' + 
-            (data.health_score >= 80 ? 'health-good' : 
-             data.health_score >= 60 ? 'health-warning' : 
-             'health-critical');
+    // Make API call
+    fetch('http://localhost:8000/api/predict-maintenance/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        maintenanceResult.classList.remove('hidden');
+        displayMaintenanceResults(data);
+    })
+    .catch(error => console.error('Error:', error));
+});
 
-        // Update text content
-        healthScore.textContent = `${data.health_score}%`;
-        nextService.textContent = data.recommended_date;
+function displayMaintenanceResults(data) {
+    const indicator = maintenanceResult.querySelector('.health-indicator');
+    const healthScore = maintenanceResult.querySelector('span:contains("Health score")');
+    const nextService = maintenanceResult.querySelector('span:contains("Next service")');
+    const issuesList = maintenanceResult.querySelector('ul');
 
-        // Update issues list
-        issuesList.innerHTML = data.issues.map(issue => 
-            `<li>${issue}</li>`
-        ).join('');
+    // Update health indicator class
+    indicator.className = 'health-indicator ' + 
+        (data.health_score >= 80 ? 'health-good' : 
+         data.health_score >= 60 ? 'health-warning' : 
+         'health-critical');
+
+    // Update text content
+    healthScore.textContent = `${data.health_score}%`;
+    nextService.textContent = data.recommended_date;
+
+    // Update issues list
+    issuesList.innerHTML = data.issues.map(issue => 
+        `<li>${issue}</li>`
+    ).join('');
+}
+
+// Crop Yield Prediction
+document.getElementById('yieldForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const yieldResult = document.getElementById('yieldResult');
+    
+    // Show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+        <div class="flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            Calculating...
+        </div>
+    `;
+
+    try {
+        const requestData = {
+            crop: document.getElementById('cropType').value,
+            growing_system: document.getElementById('growingSystem').value,
+            greenhouse_area: parseFloat(document.getElementById('greenhouseArea').value),
+            germination: {
+                temperature: parseFloat(document.getElementById('germination_temp').value),
+                humidity: parseFloat(document.getElementById('germination_humidity').value),
+                led_r: parseFloat(document.getElementById('germination_led_r').value),
+                led_g: parseFloat(document.getElementById('germination_led_g').value),
+                led_b: parseFloat(document.getElementById('germination_led_b').value)
+            },
+            vegetative: {
+                temperature: parseFloat(document.getElementById('vegetative_temp').value),
+                humidity: parseFloat(document.getElementById('vegetative_humidity').value),
+                led_r: parseFloat(document.getElementById('vegetative_led_r').value),
+                led_g: parseFloat(document.getElementById('vegetative_led_g').value),
+                led_b: parseFloat(document.getElementById('vegetative_led_b').value)
+            },
+            flowering: {
+                temperature: parseFloat(document.getElementById('flowering_temp').value),
+                humidity: parseFloat(document.getElementById('flowering_humidity').value),
+                led_r: parseFloat(document.getElementById('flowering_led_r').value),
+                led_g: parseFloat(document.getElementById('flowering_led_g').value),
+                led_b: parseFloat(document.getElementById('flowering_led_b').value)
+            },
+            fruiting: {
+                temperature: parseFloat(document.getElementById('fruiting_temp').value),
+                humidity: parseFloat(document.getElementById('fruiting_humidity').value),
+                led_r: parseFloat(document.getElementById('fruiting_led_r').value),
+                led_g: parseFloat(document.getElementById('fruiting_led_g').value),
+                led_b: parseFloat(document.getElementById('fruiting_led_b').value)
+            }
+        };
+
+        console.log('Sending request:', requestData);
+
+        const response = await fetch('http://localhost:8000/api/predict-yield/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Received response:', data);
+
+        // Update the results
+        document.getElementById('totalYield').textContent = data.total_yield.toFixed(1);
+        document.getElementById('yieldPerPlant').textContent = data.yield_per_plant.toFixed(1);
+        document.getElementById('totalPlants').textContent = data.total_plants;
+
+        // Show the results
+        yieldResult.classList.remove('hidden');
+        yieldResult.scrollIntoView({ behavior: 'smooth' });
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error calculating yield. Please try again.');
+    } finally {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = 'Predict Yield';
     }
+});
 </script>
 {% endblock %}

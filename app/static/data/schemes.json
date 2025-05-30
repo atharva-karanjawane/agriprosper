@@ -1,0 +1,182 @@
+[
+    {
+        "sr_no":1,
+        "scheme_name":"Nanaji Deshmukh Krishi Sanjeevani Prakalp (Project on Climate Resilient Agriculture - POCRA)",
+        "department":"Department of Agriculture, Government of Maharashtra",
+        "govt_type":"State",
+        "target_beneficiary":"Individual Farmers, Farmer Producer Organisations, Farmers Interest Group, Self Help Groups",
+        "geography":"Akola, Amravati, Chhatrapati Sambhajinagar, Beed, Buldhana, Hingoli, Jalgaon, Jalna, Latur, Nanded, Dharashiv, Parbhani, Wardha, Washim, Yavatmal",
+        "scheme_details":"This project is being implemented by Government of Maharashtra (GoM) with the assistance of World Bank to enhance climate-resilience and profitability of small holder farming systems in selected districts of the State. This project includes benefit to individual farmers, financial assistance to farmer producer companies\/ farmer group\/self-help group, soil and water conservation works, farm schools, capacity building, agro-climatic advisory services, etc.",
+        "scheme_link":"https:/mahapocra.gov.in/"
+    },
+    {
+        "sr_no":2,
+        "scheme_name":"Kisan Credit Card (KCC) Scheme",
+        "department":null,
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers, Tenant Farmers, Self Help Groups, Joint Liability Groups",
+        "geography":"All States and Union Territories",
+        "scheme_details":"The Kisan Credit Card scheme aims at providing adequate and timely credit support from the banking system under a single window with the flexible and simplified procedures to the farmers for their cultivation and other needs",
+        "scheme_link":"https://www.rbi.org.in/commonman/Upload/English/Notification/PDFs/04MCKCC03072017.pdf"
+    },
+    {
+        "sr_no":3,
+        "scheme_name":"Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+        "department":"Department of Agriculture, Cooperation & Farmers Welfare (DAC&FW), Ministry of Agriculture & Farmers Welfare (MoA&FW),",
+        "govt_type":"Central",
+        "target_beneficiary":"All farmers growing notified crops in a notified area during the season who have insurable interest in the crop are eligible.",
+        "geography":"All States and Union Territories",
+        "scheme_details":"Pradhan Mantri Fasal Bima Yojana (PMFBY) was launched from Kharif 2016 with aim to support production in agriculture by providing an affordable crop insurance product to ensure comprehensive risk cover for crops of farmers against all non-preventable natural",
+        "scheme_link":"https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf"
+    },
+    {
+        "sr_no":4,
+        "scheme_name":"Dr. Babasaheb Ambedkar Krishi Swavalambam Yojana",
+        "department":"Department of Agriculture, Government of Maharashtra",
+        "govt_type":"State",
+        "target_beneficiary":"Scheduled Caste & Neo-Buddhist farmers in Maharashtra",
+        "geography":"Maharashtra (All districts)",
+        "scheme_details":"Under the scheme financial assistance is provided in the form of 100 per cent subsidy to SC & Neo-Buddhist farmers holding land 0.20 ha to six ha and having annual income upto \u00e2\u201a\u00b9 1.50 lakh, with an objective to provide sustainable irrigation facility such as new well (for new well minimum 0.40 ha land is essential), old well repairing, plastification of farm pond, inwell boring, pumpset, electric connection charges, micro irrigation set, etc",
+        "scheme_link":"https://agriwell.mahaonline.gov.in/"
+    },
+    {
+        "sr_no":5,
+        "scheme_name":"Birsa Munda Krish Kranti Yojana",
+        "department":"Department of Agriculture, Government of Maharashtra",
+        "govt_type":"State",
+        "target_beneficiary":"Scheduled Tribe (ST) farmers in Maharashtra",
+        "geography":"Maharashtra (All districts)",
+        "scheme_details":"Under the scheme financial assistance is provided in the form of 100 per cent subsidy to ST farmers holding land 0.20 ha to six ha and having annual income upto \u00e2\u201a\u00b9 1.50 lakh, with an objective to provide sustainable irrigation facility such as new well (for new well minimum 0.40 ha land is essential), old well repairing, plastification of farm pond, inwell boring, pumpset, electric connection charges, HDPE\/PVC pipe, micro irrigation set, kitchen garden, etc",
+        "scheme_link":"https://agriwell.mahaonline.gov.in/"
+    },
+    {
+        "sr_no":6,
+        "scheme_name":"Pradhan Mantri Kisan Samman",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW)",
+        "govt_type":"Central",
+        "target_beneficiary":"All landholding farmers' families",
+        "geography":"All States and Union Territories",
+        "scheme_details":"The objective of Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) scheme is to augment the income of small & marginal farmers. Under this scheme, eligible farmers' families (husband, wife, and",
+        "scheme_link":"https://www.pmkisan.gov.in/"
+    },
+    {
+        "sr_no":7,
+        "scheme_name":"Pradhan Mantri Kisan Maandhan Yojana",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Small and Marginal Farmers having cultivable landholding up to 2 hectares falling in the age group of 18 to 40 years",
+        "geography":"All States and Union Territories",
+        "scheme_details":"Pradhan Mantri Kisan Maandhan Yojana (PMKMY), a voluntary and contribution-based pension scheme, has been initiated in the State to provide old age protection and social security to all small & marginal farmers. Under the scheme, a fixed pension of \u00e2\u201a\u00b9 3,000 per month is to be given to all eligible small and marginal farmers.",
+        "scheme_link":"https://pmkmy.gov.in/"
+    },
+    {
+        "sr_no":8,
+        "scheme_name":"mKisan",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers",
+        "geography":"All States and Union Territories",
+        "scheme_details":"mKisan portal is mobile based service which enables farmers and all other stakeholders to obtain advisories and information on agricultural meteorological advisory, hurricane, crop & pest infestation, crop insurance, market price, etc. being sent by experts and government organisations at different levels through mKisan portal free of cost.",
+        "scheme_link":"https://mkisan.gov.in/Home/About"
+    },
+    {
+        "sr_no":9,
+        "scheme_name":"Electronic National Agriculture Market (e-NAM)",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":null,
+        "geography":"All States and Union Territories",
+        "scheme_details":"e-NAM, a pan-India electronic trading portal launched in 2016, helps to directly connect APMC mandis which can be accessed online. This provides a single window service for all APMC related information & services including information on commodity arrivals & prices, buy & sell trade offers, provision to respond to trade offers. An online market facility reduces transaction costs and information",
+        "scheme_link":"https://enam.gov.in/web/docs/namguidelines.pdf"
+    },
+    {
+        "sr_no":10,
+        "scheme_name":"Rashtriya Krishi Vikas Yojana - Remunerative Approaches for Agriculture and Allied sector Rejuvenation (RKVY-RAFTAAR)",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":null,
+        "geography":"All States and Union Territories",
+        "scheme_details":"Rashtriya Krishi Vikas Yojana was launched in 2007-08 with the aim of holistic development of agriculture and allied sectors. Since 2017-18 this scheme is being implemented as RKVY-RAFTAAR with an objective of making farming a remunerative economic activity through strengthening farmers' efforts, risk mitigation and promoting agri-business entrepreneurship. This Scheme is being implemented from the year 2022-23 as RVKY-Cafeteria. It includes two streams viz. Annual Action Plan (AAP) and Detailed Project Report (DPR). Under AAP based stream, (i) Per Drop More Crop (Micro irrigation), (ii) Sub Mission on Agriculture Mechanisation, (iii) Rainfed Area Development, (iv) Soil Health Card & Management, (v) Organic Farming (Paramparagat Krishi Vikas Yojana) are included. Under DPR stream, 70 per cent grant is reserved for growth in production, infrastructure & assets to states, 20 per cent for special sub-schemes of national priority under RKVY-Cafeteria and 10 per cent for innovation & agri-entrepreneurship development projects",
+        "scheme_link":"https://rkvy.nic.in/"
+    },
+    {
+        "sr_no":11,
+        "scheme_name":"Rainfed Area Development Programme",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers",
+        "geography":"All States and Union Territories",
+        "scheme_details":"Rainfed agriculture is risk prone activity mainly due to its dependence on climate. Objective of Rainfed Area Development is to programme is to minimise risk by providing agriculture-based income generating opportunities and sustaining the rainfed agriculture through optimum utilisation of potential of natural resources and resources created through various interventions",
+        "scheme_link":"https://agricoop.gov.in/sites/default/files/RAD_Operational_Guidelines.pdf"
+    },
+    {
+        "sr_no":12,
+        "scheme_name":"Soil Health Card (SHC) Scheme under Rashtriya Krishi Vikas Yojana (RKVY)",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers",
+        "geography":"All States and Union Territories",
+        "scheme_details":"Distribution of Soil Health Cards (SHCs) is implemented to promote integrated nutrient management for maintaining soil health and improving soil fertility. SHCs are being distributed to farmers in phases to create awareness about soil health status and suggest measures to improve soil health",
+        "scheme_link":"https://www.soilhealth.dac.gov.in/home"
+    },
+    {
+        "sr_no":13,
+        "scheme_name":"Paramparagat Krishi Vikas Yojana",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers",
+        "geography":"All States and Union Territories",
+        "scheme_details":"The objectives of Paramparagat Krishi Vikas Yojana (PKVY) are (i) enhancing soil fertility and producing healthy food through organic practices without use of chemicals, (ii) empowering farmers through cluster approach in farm practice management, (iii) quality assurance and (iv) direct marketing of agriculture produce through innovative means",
+        "scheme_link":"https://agricoop.gov.in/Documents/PKVY_Guidelines.pdf"
+    },
+    {
+        "sr_no":14,
+        "scheme_name":"National Food Security Mission (NFSM)",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":null,
+        "geography":"All States and Union Territories",
+        "scheme_details":"Main objectives of NFSM are to increase production of rice, wheat, pulses, coarse cereals and nutri-cereals through area expansion & productivity enhancement in a sustainable manner, restoring soil fertility and productivity at the individual farm level",
+        "scheme_link":"https://nfsm.gov.in/"
+    },
+    {
+        "sr_no":15,
+        "scheme_name":"Seed Village Programme under Krishonnati Yojana",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers",
+        "geography":"All States and Union Territories",
+        "scheme_details":"Green Revolution \u00e2\u20ac\u201c Krishonnati Yojana is an Umbrella Scheme for the agriculture sector that has been implemented since 2016-17 by clubbing several schemes\/missions under one umbrella scheme. The Sub-Mission on Seeds and Planting Material (SMSP) aims to increase the production of certified \/ quality seed, increase SRR, upgrade the quality of farm-saved seeds, strengthen the seed multiplication chain, promote new technologies and methodologies in seed production, processing, testing, etc., to strengthen and modernizing infrastructure for seed production, storage, certification, and quality, etc.",
+        "scheme_link":"https://diragrijmu.nic.in/cssguidelines/smsp.pdf"
+    },
+    {
+        "sr_no":16,
+        "scheme_name":"Seed Processing Plant and Storage Godown under Krishonnati Yojana",
+        "department":"Ministry of Agriculture & Farmers Welfare (MoA&FW), Government of India",
+        "govt_type":"Central",
+        "target_beneficiary":"Farmers",
+        "geography":"All States and Union Territories",
+        "scheme_details":"Green Revolution \u00e2\u20ac\u201c Krishonnati Yojana is an Umbrella Scheme for the agriculture sector that has been implemented since 2016-17 by clubbing several schemes\/missions under one umbrella scheme. Under this scheme, financial assistance on production of seeds, seed certification, farmers training, seed processing and seed storage godowns",
+        "scheme_link":"https://www.myscheme.gov.in/schemes/ky-smsp"
+    },
+    {
+        "sr_no":17,
+        "scheme_name":"Crop Pest Surveillance and Advisory",
+        "department":"Department of Agriculture, Government of Maharashtra",
+        "govt_type":"State",
+        "target_beneficiary":"Farmers",
+        "geography":"Maharashtra",
+        "scheme_details":"CROPSAP is online, realtime Crop Pest Management Advisory Project which is being implemented in collaboration with Indian Council of Agricultural Research Institute and agriculture universities in the",
+        "scheme_link":"https://cropsap.maharashtra.gov.in/index.php"
+    },
+    {
+        "sr_no":18,
+        "scheme_name":"Bhausaheb Fundkar Falbaug Lagwad Yojana",
+        "department":"Department of Agriculture, Government of Maharashtra",
+        "govt_type":"State",
+        "target_beneficiary":"Farmers not registered under MGNREGA",
+        "geography":"Maharashtra",
+        "scheme_details":"GoM is implementing this 100 per cent subsidy scheme from kharif season of 2018-19 in the State for farmers not registered under MGNREGA. The objectives of the scheme are to enhance income of farmers, create employment for young farmers, change cropping pattern, create a sustainable source of income and increase production of raw materials required for agro-processing industries. This scheme covers plantation of 16 perennial horticulture crops.",
+        "scheme_link":"https://mahadbt.maharashtra.gov.in/Farmer/PDF/Scheme-BhausahebPhundkarFalbaagLagvadYojana.pdf"
+    }
+]

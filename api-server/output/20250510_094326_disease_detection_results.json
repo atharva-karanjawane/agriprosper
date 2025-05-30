@@ -1,0 +1,80 @@
+{
+    "inference_id": "3ad056a7-ecd6-4a5a-8993-79e1b1d12f81",
+    "time": 0.037739289000455756,
+    "image": {
+        "width": 592,
+        "height": 418
+    },
+    "predictions": [
+        {
+            "x": 49.0,
+            "y": 284.0,
+            "width": 38.0,
+            "height": 26.0,
+            "confidence": 0.7256406545639038,
+            "class": "Tomato leaf late blight",
+            "class_id": 4,
+            "detection_id": "48662cc3-1e4d-4ba1-b76f-3fb927c0fc2b"
+        },
+        {
+            "x": 377.0,
+            "y": 258.5,
+            "width": 54.0,
+            "height": 47.0,
+            "confidence": 0.6931542158126831,
+            "class": "Tomato leaf late blight",
+            "class_id": 4,
+            "detection_id": "55df5dac-6c8f-4e0d-b453-ea81668be01e"
+        },
+        {
+            "x": 285.0,
+            "y": 396.0,
+            "width": 36.0,
+            "height": 40.0,
+            "confidence": 0.48738402128219604,
+            "class": "Tomato leaf late blight",
+            "class_id": 4,
+            "detection_id": "aeb844e2-4aa2-418c-82a0-5a07b7d69e6d"
+        },
+        {
+            "x": 387.5,
+            "y": 163.5,
+            "width": 37.0,
+            "height": 37.0,
+            "confidence": 0.42107656598091125,
+            "class": "Tomato leaf late blight",
+            "class_id": 4,
+            "detection_id": "2d7664c0-6133-47ec-8217-f669c0597f82"
+        },
+        {
+            "x": 387.5,
+            "y": 163.5,
+            "width": 37.0,
+            "height": 37.0,
+            "confidence": 0.41992518305778503,
+            "class": "Tomato Early blight leaf",
+            "class_id": 2,
+            "detection_id": "7c728acb-a4e6-4dc6-ae9b-fac78235d220"
+        },
+        {
+            "x": 369.0,
+            "y": 57.5,
+            "width": 34.0,
+            "height": 45.0,
+            "confidence": 0.41672393679618835,
+            "class": "Tomato Early blight leaf",
+            "class_id": 2,
+            "detection_id": "55f6651e-89be-4412-a784-67ac11565efe"
+        },
+        {
+            "x": 308.0,
+            "y": 238.5,
+            "width": 46.0,
+            "height": 45.0,
+            "confidence": 0.41160401701927185,
+            "class": "Tomato Early blight leaf",
+            "class_id": 2,
+            "detection_id": "9ed230d6-9ed3-4a53-b163-1d0ae5933739"
+        }
+    ]
+}

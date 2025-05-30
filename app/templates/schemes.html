@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-6">
+    <header class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Government Schemes</h1>
+            <p class="text-gray-600 mt-1">Browse the latest agricultural support schemes available for farmers.</p>
+        </div>
+    </header>
+
+    {% if schemes %}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="List of Government Schemes">
+        {% for scheme in schemes %}
+        <article class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition duration-200">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ scheme.scheme_name }}</h3>
+            <p class="text-sm text-gray-500 mb-1"><strong>Sr. No:</strong> {{ scheme.sr_no }}</p>
+            <p class="text-sm text-gray-500 mb-1"><strong>Department:</strong> {{ scheme.department }}</p>
+            <p class="text-sm text-gray-500 mb-1"><strong>Government Type:</strong> {{ scheme.govt_type }}</p>
+            <p class="text-sm text-gray-500 mb-1"><strong>Target Beneficiaries:</strong> {{ scheme.target_beneficiary }}</p>
+            <p class="text-sm text-gray-500 mb-1"><strong>Geography:</strong> {{ scheme.geography }}</p>
+            <p class="text-gray-600 mb-2"><strong>Details:</strong> {{ scheme.scheme_details }}</p>
+            <a href="{{ scheme.scheme_link }}" class="text-blue-600 hover:underline text-sm" target="_blank" rel="noopener">
+                View Full Scheme Details
+            </a>
+        </article>
+        {% endfor %}
+    </section>
+    {% else %}
+    <p class="text-gray-500 text-center mt-10">No schemes available at the moment. Please check back later.</p>
+    {% endif %}
+</div>
+{% endblock %}
