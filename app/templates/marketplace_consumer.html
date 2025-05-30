@@ -370,7 +370,7 @@
             {% for product in products %}
             <div class="product-card">
                 <div class="relative">
-                    <img src="{{ url_for('static', filename=product.image_path) if product.image_path else 'images/placeholder.jpg' }}" alt="{{ product.name }}" class="product-image">
+                    <img src="{{ url_for('static', filename='/images/'+product.name+'.jpg') if product.name else url_for('static', filename='placeholder.png') }}" alt="{{ product.name }}" class="product-image">
                     <div class="product-badge {% if product.quality_score >= 9 %}quality-badge-excellent{% elif product.quality_score >= 8 %}quality-badge-good{% else %}quality-badge-average{% endif %}">
                         Quality: {{ "%.1f"|format(product.quality_score) }}/10
                     </div>
