@@ -39,16 +39,18 @@ def init_db():
 
     with sqlite3.connect(DB_NAME) as conn:
         conn.execute('''
-            CREATE TABLE IF NOT EXISTS sensor_data (
-                data_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            CREATE TABLE IF NOT EXISTS sensor_readings (
+                reading_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 zone_id INTEGER NOT NULL,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-                temperature REAL,
-                humidity REAL,
-                soil_moisture REAL,
-                led_red_percent INTEGER CHECK(led_red_percent BETWEEN 0 AND 100),
-                led_green_percent INTEGER CHECK(led_green_percent BETWEEN 0 AND 100),
-                led_blue_percent INTEGER CHECK(led_blue_percent BETWEEN 0 AND 100),
+                temperature REAL NOT NULL,
+                humidity REAL NOT NULL,
+                soil_moisture REAL NOT NULL,
+                led_red INTEGER NOT NULL CHECK(led_red BETWEEN 0 AND 255),
+                led_green INTEGER NOT NULL CHECK(led_green BETWEEN 0 AND 255),
+                led_blue INTEGER NOT NULL CHECK(led_blue BETWEEN 0 AND 255),
+                pump_status BOOLEAN NOT NULL CHECK(pump_status IN (0, 1)),
+                mist_maker_status BOOLEAN NOT NULL CHECK(mist_maker_status IN (0, 1)),
                 FOREIGN KEY(zone_id) REFERENCES zones(zone_id)
             )
         ''')
@@ -564,25 +566,299 @@ def get_pending_orders():
             ORDER BY order_date DESC
         """)
         return cur.fetchall()
-    
-def update_order_status(order_id, status):
-    """Update the status of an order in the database."""
+
+def add_sensor_reading(zone_id, temperature, humidity, soil_moisture, 
+                      led_red, led_green, led_blue, 
+                      pump_status, mist_maker_status):
+    """Add a new sensor reading to the database"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.execute('''
+                INSERT INTO sensor_readings
+                (zone_id, timestamp, temperature, humidity, soil_moisture, 
+                led_red, led_green, led_blue, pump_status, mist_maker_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                zone_id,
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                temperature,
+                humidity,
+                soil_moisture,
+                led_red,
+                led_green,
+                led_blue,
+                pump_status,
+                mist_maker_status
+            ))
+            return True
+    except sqlite3.Error as e:
+        print(f"Database error while adding sensor reading: {e}")
+        return False
+
+def get_latest_sensor_reading(zone_id):
+    """Get the latest sensor reading for a specific zone"""
     try:
         with sqlite3.connect(DB_NAME) as conn:
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
-            cur.execute("""
-                UPDATE orders
-                SET status = ?
-                WHERE order_id = ?
-            """, (status, order_id))
-            conn.commit()  # Commit the changes
-            return cur.rowcount  # Return number of rows affected
+            cur.execute('''
+                SELECT * FROM sensor_readings
+                WHERE zone_id = ?
+                ORDER BY timestamp DESC
+                LIMIT 1
+            ''', (zone_id,))
+            data = cur.fetchone()
+            
+            if data:
+                return dict(data)
+            else:
+                return None
     except sqlite3.Error as e:
-        print(f"Database error while updating order status: {e}")
-        return 0
+        print(f"Database error while getting latest sensor reading: {e}")
+        return None
+
+def get_sensor_readings_history(zone_id, hours=24):
+    """Get sensor readings history for a specific zone for the last X hours"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            
+            # Calculate the timestamp for X hours ago
+            time_ago = (datetime.now() - timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")
+            
+            cur.execute('''
+                SELECT * FROM sensor_readings
+                WHERE zone_id = ? AND timestamp >= ?
+                ORDER BY timestamp ASC
+            ''', (zone_id, time_ago))
+            
+            data = cur.fetchall()
+            return [dict(row) for row in data]
+    except sqlite3.Error as e:
+        print(f"Database error while getting sensor readings history: {e}")
+        return []
+
+def update_device_status(zone_id, device_type, status):
+    """Update the status of a device (pump or mist maker) for a specific zone
+    
+    Args:
+        zone_id (int): The ID of the zone
+        device_type (str): Either 'pump' or 'mist_maker'
+        status (int): 0 for OFF, 1 for ON
+    """
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            # Get the latest sensor data for this zone
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute('''
+                SELECT * FROM sensor_readings
+                WHERE zone_id = ?
+                ORDER BY timestamp DESC
+                LIMIT 1
+            ''', (zone_id,))
+            latest_data = cur.fetchone()
+            
+            if latest_data:
+                latest_data = dict(latest_data)
+                # Insert new record with updated device status but same sensor values
+                if device_type == 'pump':
+                    conn.execute('''
+                        INSERT INTO sensor_readings
+                        (zone_id, timestamp, temperature, humidity, soil_moisture, 
+                        led_red, led_green, led_blue, pump_status, mist_maker_status)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        zone_id,
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        latest_data['temperature'],
+                        latest_data['humidity'],
+                        latest_data['soil_moisture'],
+                        latest_data['led_red'],
+                        latest_data['led_green'],
+                        latest_data['led_blue'],
+                        status,
+                        latest_data['mist_maker_status']
+                    ))
+                elif device_type == 'mist_maker':
+                    conn.execute('''
+                        INSERT INTO sensor_readings
+                        (zone_id, timestamp, temperature, humidity, soil_moisture, 
+                        led_red, led_green, led_blue, pump_status, mist_maker_status)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        zone_id,
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        latest_data['temperature'],
+                        latest_data['humidity'],
+                        latest_data['soil_moisture'],
+                        latest_data['led_red'],
+                        latest_data['led_green'],
+                        latest_data['led_blue'],
+                        latest_data['pump_status'],
+                        status
+                    ))
+                return True
+            else:
+                # No existing data, create new record with default sensor values
+                pump = status if device_type == 'pump' else 0
+                mist = status if device_type == 'mist_maker' else 0
+                
+                conn.execute('''
+                    INSERT INTO sensor_readings
+                    (zone_id, timestamp, temperature, humidity, soil_moisture, 
+                    led_red, led_green, led_blue, pump_status, mist_maker_status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    zone_id,
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    25.0,   # Default temperature
+                    60.0,   # Default humidity
+                    40.0,   # Default soil moisture
+                    128,    # Default red LED
+                    128,    # Default green LED
+                    128,    # Default blue LED
+                    pump,   # Pump status
+                    mist    # Mist maker status
+                ))
+                return True
+    except sqlite3.Error as e:
+        print(f"Database error while updating device status: {e}")
+        return False
+    
+def get_zone_average_data(zone_id, days=7):
+    """Get average sensor data for a specific zone over the last X days"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            
+            # Calculate the timestamp for X days ago
+            time_ago = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
+            
+            cur.execute('''
+                SELECT 
+                    AVG(temperature) as avg_temperature,
+                    AVG(humidity) as avg_humidity,
+                    AVG(soil_moisture) as avg_soil_moisture,
+                    AVG(led_red_percent) as avg_red,
+                    AVG(led_green_percent) as avg_green,
+                    AVG(led_blue_percent) as avg_blue
+                FROM sensor_data
+                WHERE zone_id = ? AND timestamp >= ?
+            ''', (zone_id, time_ago))
+            
+            data = cur.fetchone()
+            return dict(data) if data else None
+    except sqlite3.Error as e:
+        print(f"Database error while getting zone average data: {e}")
+        return None
+
+def update_led_settings(zone_id, red, green, blue):
+    """Update LED settings for a specific zone"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            # Get the latest sensor data for this zone
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute('''
+                SELECT * FROM sensor_data
+                WHERE zone_id = ?
+                ORDER BY timestamp DESC
+                LIMIT 1
+            ''', (zone_id,))
+            latest_data = cur.fetchone()
+            
+            if latest_data:
+                # Insert new record with updated LED values but same sensor values
+                conn.execute('''
+                    INSERT INTO sensor_data 
+                    (zone_id, timestamp, temperature, humidity, soil_moisture, 
+                    led_red_percent, led_green_percent, led_blue_percent)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    zone_id,
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    latest_data['temperature'],
+                    latest_data['humidity'],
+                    latest_data['soil_moisture'],
+                    red,
+                    green,
+                    blue
+                ))
+                return True
+            else:
+                # No existing data, create new record with default sensor values
+                conn.execute('''
+                    INSERT INTO sensor_data 
+                    (zone_id, timestamp, temperature, humidity, soil_moisture, 
+                    led_red_percent, led_green_percent, led_blue_percent)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    zone_id,
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    28.5,  # Default temperature
+                    65.0,  # Default humidity
+                    42.0,  # Default soil moisture
+                    red,
+                    green,
+                    blue
+                ))
+                return True
+    except sqlite3.Error as e:
+        print(f"Database error while updating LED settings: {e}")
+        return False
+
+def get_all_zones():
+    """Get all zones from the database"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute('''
+                SELECT z.*, u.name as farmer_name
+                FROM zones z
+                JOIN users u ON z.user_id = u.id
+                ORDER BY z.user_id, z.zone_label
+            ''')
+            zones = cur.fetchall()
+            return [dict(zone) for zone in zones]
+    except sqlite3.Error as e:
+        print(f"Database error while getting all zones: {e}")
+        return []
+
+def initialize_default_zones():
+    """Initialize default zones for testing if none exist"""
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            # Check if any zones exist
+            cur = conn.cursor()
+            cur.execute("SELECT COUNT(*) FROM zones")
+            count = cur.fetchone()[0]
+            
+            if count == 0:
+                # Create default zones for user ID 1
+                for label in ['A', 'B', 'C', 'D']:
+                    conn.execute('''
+                        INSERT INTO zones (user_id, zone_label, crop_type, irrigation_type, led_enabled)
+                        VALUES (?, ?, ?, ?, ?)
+                    ''', (
+                        1,  # Default user ID
+                        label,
+                        'Tomato' if label == 'A' else 'Spinach' if label == 'B' else 'Lettuce' if label == 'C' else 'Chili',
+                        'Drip',
+                        1
+                    ))
+                print("Default zones initialized")
+                return True
+            return False
+    except sqlite3.Error as e:
+        print(f"Database error while initializing default zones: {e}")
+        return False
 
 if __name__ == '__main__':
     init_db()
     plant_lifecyle_static()
     insert_mock_products()
+    initialize_default_zones()
