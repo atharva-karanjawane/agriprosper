@@ -364,6 +364,16 @@
                     <i class="fas fa-bell"></i>
                     <span>Alerts</span>
                 </a>
+                <a href="{{ url_for('marketplace_user') }}"
+                    class="nav-item {% if request.endpoint == 'marketplace-user' %}active{% endif %}">
+                    <i class="fas fa-bell"></i>
+                    <span>Marketplace - USER</span>
+                </a>
+                <a href="{{ url_for('marketplace_farmer') }}"
+                    class="nav-item {% if request.endpoint == 'marketplace-farmer' %}active{% endif %}">
+                    <i class="fas fa-bell"></i>
+                    <span>Marketplace - Farmer</span>
+                </a>
             </nav>
             <div class="mt-auto">
                 <div class="nav-item">

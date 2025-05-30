@@ -1,0 +1,1141 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Marketplace - Agri Prosper{% endblock %}
+
+{% block extra_css %}
+<style>
+    .marketplace-header {
+        background: linear-gradient(135deg, #bbf7d0 0%, #f8fafc 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .tab-container {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .tab-buttons {
+        display: flex;
+        border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .tab-buttons::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-button {
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        border-bottom: 2px solid transparent;
+    }
+
+    .tab-button.active {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .tab-content {
+        display: none;
+        padding: 1.5rem;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(34, 197, 94, 0.1);
+    }
+
+    .product-image {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .quality-badge-excellent {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--primary-color);
+    }
+
+    .quality-badge-good {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+    }
+
+    .quality-badge-average {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+    }
+
+    .product-details {
+        padding: 1.5rem;
+    }
+
+    .product-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .info-icon {
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+        box-shadow: 0 10px 20px rgba(34, 197, 94, 0.05);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .order-id {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .order-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .order-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+    }
+
+    .status-confirmed {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--primary-color);
+    }
+
+    .status-shipped {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent-blue);
+    }
+
+    .status-delivered {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--primary-color);
+    }
+
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+    }
+
+    .order-customer {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px dashed rgba(34, 197, 94, 0.2);
+    }
+
+    .customer-name {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .customer-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .customer-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .order-items {
+        margin-bottom: 1rem;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .item-name {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .item-quantity {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .item-price {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+        color: var(--text-primary);
+        padding-top: 0.75rem;
+    }
+
+    .order-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+        padding: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+    }
+
+    .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .form-col {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .zone-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .zone-box {
+        border: 2px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        background: rgba(187, 247, 208, 0.1);
+        padding: 1.5rem 1rem;
+    }
+
+    .zone-box.active {
+        border-color: var(--primary-color);
+        background: rgba(187, 247, 208, 0.3);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+
+    .zone-label {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .zone-info {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    .analysis-result {
+        background: rgba(34, 197, 94, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        display: none;
+    }
+
+    .analysis-result.active {
+        display: block;
+    }
+
+    .analysis-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .analysis-title {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .analysis-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .analysis-score {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-align: center;
+        margin: 1rem 0;
+    }
+
+    .analysis-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .analysis-item {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .analysis-item-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .analysis-item-value {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .recommendations {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .recommendations-title {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .recommendations-list {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: rgba(34, 197, 94, 0.2);
+        margin-bottom: 1rem;
+    }
+
+    .empty-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-description {
+        color: var(--text-secondary);
+        max-width: 400px;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .marketplace-header {
+            padding: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1rem;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .order-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .order-actions .btn {
+            width: 100%;
+        }
+
+        .zone-selector {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Marketplace Header -->
+    <div class="marketplace-header">
+        <h1 class="text-2xl font-semibold text-gray-800">Farmer's Marketplace</h1>
+        <p class="text-gray-600 mt-1">Manage your products and orders in one place.</p>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <div class="tab-button active" data-tab="products">My Products</div>
+            <div class="tab-button" data-tab="orders">Orders</div>
+            <div class="tab-button" data-tab="add-product">Add Product</div>
+            <div class="tab-button" data-tab="analyze-crop">Analyze Crop</div>
+        </div>
+
+        <!-- My Products Tab -->
+        <div class="tab-content active" id="products-tab">
+            {% if products %}
+                <div class="product-grid">
+                    {% for product in products %}
+                        <div class="product-card">
+                            <div class="relative">
+                                {% if product.image_path %}
+                                    <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" class="product-image">
+                                {% else %}
+                                    <div class="product-image flex items-center justify-center">
+                                        <i class="fas fa-seedling text-5xl text-green-300"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if product.quality_score >= 9 %}
+                                    <div class="product-badge quality-badge-excellent">Quality: {{ product.quality_score }}/10</div>
+                                {% elif product.quality_score >= 7 %}
+                                    <div class="product-badge quality-badge-good">Quality: {{ product.quality_score }}/10</div>
+                                {% else %}
+                                    <div class="product-badge quality-badge-average">Quality: {{ product.quality_score }}/10</div>
+                                {% endif %}
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <div class="product-info">
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fas fa-tag"></i></div>
+                                        <span>Category: {{ product.category|capitalize }}</span>
+                                    </div>
+                                    {% if product.zone_label %}
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                        <span>Zone: {{ product.zone_label }} ({{ product.crop_type }})</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fas fa-calendar"></i></div>
+                                        <span>Harvested: {{ product.harvest_date }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fas fa-box"></i></div>
+                                        <span>Available: {{ product.quantity_available }} {{ product.unit }}</span>
+                                    </div>
+                                </div>
+                                <div class="product-price">${{ product.price }}/{{ product.unit }}</div>
+                                <div class="product-actions">
+                                    <button class="btn btn-outline flex-1 edit-product-btn" data-product-id="{{ product.product_id }}">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Edit</span>
+                                    </button>
+                                    <button class="btn btn-outline flex-1 delete-product-btn" data-product-id="{{ product.product_id }}">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="empty-title">No Products Listed</h3>
+                    <p class="empty-description">You haven't listed any products yet. Add your first product to start selling.</p>
+                    <button class="btn btn-primary add-product-tab-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Your First Product</span>
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-content" id="orders-tab">
+            {% if orders %}
+                {% for order in orders %}
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-id">Order #{{ order.order_id }}</div>
+                                <div class="order-date">{{ order.order_date }}</div>
+                            </div>
+                            <div class="status-badge status-{{ order.status }}">
+                                {{ order.status|capitalize }}
+                            </div>
+                        </div>
+                        <div class="order-customer">
+                            <div class="customer-name">{{ order.customer_name }}</div>
+                            <div class="customer-details">
+                                <div class="customer-detail">
+                                    <i class="fas fa-phone text-green-500"></i>
+                                    <span>{{ order.customer_phone }}</span>
+                                </div>
+                                <div class="customer-detail">
+                                    <i class="fas fa-map-marker-alt text-green-500"></i>
+                                    <span>{{ order.delivery_address }}</span>
+                                </div>
+                                <div class="customer-detail">
+                                    <i class="fas fa-calendar text-green-500"></i>
+                                    <span>Delivery: {{ order.delivery_date }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            {% for item in order.items %}
+                                <div class="order-item">
+                                    <div>
+                                        <div class="item-name">{{ item.product_name }}</div>
+                                        <div class="item-quantity">{{ item.quantity }} {{ item.unit }}</div>
+                                    </div>
+                                    <div class="item-price">${{ item.subtotal }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="order-total">
+                            <span>Total</span>
+                            <span>${{ order.total_amount }}</span>
+                        </div>
+                        {% if order.special_instructions %}
+                            <div class="mt-4 text-sm text-gray-600">
+                                <strong>Special Instructions:</strong> {{ order.special_instructions }}
+                            </div>
+                        {% endif %}
+                        <div class="order-actions">
+                            {% if order.status == 'pending' %}
+                                <button class="btn btn-primary confirm-order-btn" data-order-id="{{ order.order_id }}">
+                                    <i class="fas fa-check"></i>
+                                    <span>Confirm Order</span>
+                                </button>
+                                <button class="btn btn-outline cancel-order-btn" data-order-id="{{ order.order_id }}">
+                                    <i class="fas fa-times"></i>
+                                    <span>Cancel Order</span>
+                                </button>
+                            {% elif order.status == 'confirmed' %}
+                                <button class="btn btn-primary ship-order-btn" data-order-id="{{ order.order_id }}">
+                                    <i class="fas fa-truck"></i>
+                                    <span>Mark as Shipped</span>
+                                </button>
+                            {% elif order.status == 'shipped' %}
+                                <button class="btn btn-primary deliver-order-btn" data-order-id="{{ order.order_id }}">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Mark as Delivered</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="empty-title">No Orders Yet</h3>
+                    <p class="empty-description">You haven't received any orders yet. Once customers place orders, they will appear here.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Add Product Tab -->
+        <div class="tab-content" id="add-product-tab">
+            <div class="form-container">
+                <h3 class="form-title">Add New Product</h3>
+                <form id="add-product-form" action="{{ url_for('dashboard') }}" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="form-label">Select Greenhouse Zone (Optional)</label>
+                        <div class="zone-selector">
+                            {% for zone in zones %}
+                                <div class="zone-box" data-zone-id="{{ zone.zone_id }}">
+                                    <div class="zone-label">{{ zone.zone_label }}</div>
+                                    <div class="zone-info">{{ zone.crop_type }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="zone_id" id="selected-zone-id">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-name">Product Name</label>
+                                <input type="text" id="product-name" name="name" class="form-input" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-category">Category</label>
+                                <select id="product-category" name="category" class="form-select" required>
+                                    <option value="">Select Category</option>
+                                    <option value="vegetables">Vegetables</option>
+                                    <option value="fruits">Fruits</option>
+                                    <option value="grains">Grains</option>
+                                    <option value="herbs">Herbs</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="product-description">Description</label>
+                        <textarea id="product-description" name="description" class="form-textarea"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-price">Price</label>
+                                <input type="number" id="product-price" name="price" class="form-input" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-unit">Unit</label>
+                                <select id="product-unit" name="unit" class="form-select" required>
+                                    <option value="">Select Unit</option>
+                                    <option value="kg">Kilogram (kg)</option>
+                                    <option value="g">Gram (g)</option>
+                                    <option value="lb">Pound (lb)</option>
+                                    <option value="oz">Ounce (oz)</option>
+                                    <option value="piece">Piece</option>
+                                    <option value="bunch">Bunch</option>
+                                    <option value="dozen">Dozen</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-quantity">Quantity Available</label>
+                                <input type="number" id="product-quantity" name="quantity" class="form-input" min="1" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-quality">Quality Score (1-10)</label>
+                                <input type="number" id="product-quality" name="quality_score" class="form-input" min="1" max="10" step="0.1" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-harvest-date">Harvest Date</label>
+                                <input type="date" id="product-harvest-date" name="harvest_date" class="form-input" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label" for="product-image">Product Image</label>
+                                <input type="file" id="product-image" name="image" class="form-input" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Product</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Analyze Crop Tab -->
+        <div class="tab-content" id="analyze-crop-tab">
+            <div class="form-container">
+                <h3 class="form-title">Analyze Your Crop</h3>
+                <p class="text-gray-600 mb-4">Select a greenhouse zone to analyze crop health and get recommendations.</p>
+                
+                <div class="zone-selector">
+                    {% for zone in zones %}
+                        <div class="zone-box analyze-zone-box" data-zone-id="{{ zone.zone_id }}">
+                            <div class="zone-label">{{ zone.zone_label }}</div>
+                            <div class="zone-info">{{ zone.crop_type }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <button id="analyze-btn" class="btn btn-primary" disabled>
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analyze Selected Zone</span>
+                </button>
+                
+                <div class="analysis-result" id="analysis-result">
+                    <div class="analysis-header">
+                        <div class="analysis-title">Analysis Results</div>
+                        <div class="analysis-date" id="analysis-date">May 10, 2023</div>
+                    </div>
+                    
+                    <div class="analysis-score">
+                        <span id="health-score">8.5</span>/10
+                    </div>
+                    
+                    <div class="analysis-details">
+                        <div class="analysis-item">
+                            <div class="analysis-item-label">Estimated Yield</div>
+                            <div class="analysis-item-value" id="estimated-yield">12.8 kg/m²</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-item-label">Pest Detection</div>
+                            <div class="analysis-item-value" id="pest-detection">None detected</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-item-label">Disease Detection</div>
+                            <div class="analysis-item-value" id="disease-detection">None detected</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-item-label">Nutrient Deficiency</div>
+                            <div class="analysis-item-value" id="nutrient-deficiency">None detected</div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendations">
+                        <div class="recommendations-title">Recommendations</div>
+                        <ul class="recommendations-list" id="recommendations-list">
+                            <li>Maintain current irrigation schedule</li>
+                            <li>Consider increasing humidity slightly</li>
+                            <li>Optimal for harvesting within 5-7 days</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button id="list-product-btn" class="btn btn-primary">
+                            <i class="fas fa-tag"></i>
+                            <span>List This Product</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab Switching
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+                
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+        
+        // Add Product Tab Button
+        const addProductTabBtn = document.querySelector('.add-product-tab-btn');
+        if (addProductTabBtn) {
+            addProductTabBtn.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                document.querySelector('[data-tab="add-product"]').classList.add('active');
+                document.getElementById('add-product-tab').classList.add('active');
+            });
+        }
+        
+        // Zone Selection in Add Product
+        const zoneBoxes = document.querySelectorAll('.zone-box:not(.analyze-zone-box)');
+        const selectedZoneInput = document.getElementById('selected-zone-id');
+        
+        zoneBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                zoneBoxes.forEach(b => b.classList.remove('active'));
+                box.classList.add('active');
+                
+                const zoneId = box.getAttribute('data-zone-id');
+                selectedZoneInput.value = zoneId;
+            });
+        });
+        
+        // Analyze Crop Zone Selection
+        const analyzeZoneBoxes = document.querySelectorAll('.analyze-zone-box');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        let selectedAnalyzeZoneId = null;
+        
+        analyzeZoneBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                analyzeZoneBoxes.forEach(b => b.classList.remove('active'));
+                box.classList.add('active');
+                
+                selectedAnalyzeZoneId = box.getAttribute('data-zone-id');
+                analyzeBtn.removeAttribute('disabled');
+            });
+        });
+        
+        // Analyze Button Click
+        analyzeBtn.addEventListener('click', () => {
+            if (!selectedAnalyzeZoneId) return;
+            
+            // In a real application, this would be an AJAX call to the server
+            // For demo purposes, we'll simulate a response
+            simulateAnalysis(selectedAnalyzeZoneId);
+        });
+        
+        function simulateAnalysis(zoneId) {
+            // Show loading state
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Analyzing...</span>';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Update analysis result
+                document.getElementById('analysis-date').textContent = new Date().toLocaleDateString();
+                document.getElementById('health-score').textContent = (Math.random() * 3 + 7).toFixed(1);
+                document.getElementById('estimated-yield').textContent = (Math.random() * 5 + 10).toFixed(1) + ' kg/m²';
+                
+                // Show analysis result
+                document.getElementById('analysis-result').classList.add('active');
+                
+                // Reset button
+                analyzeBtn.innerHTML = '<i class="fas fa-chart-line"></i><span>Analyze Selected Zone</span>';
+                
+                // In a real application, you would make an AJAX call to the server
+                // fetch('/api/analyze-crop', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ zone_id: zoneId }),
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     // Update UI with analysis results
+                //     document.getElementById('health-score').textContent = data.health_score;
+                //     document.getElementById('estimated-yield').textContent = data.estimated_yield;
+                //     document.getElementById('pest-detection').textContent = data.pest_detection;
+                //     document.getElementById('disease-detection').textContent = data.disease_detection;
+                //     document.getElementById('nutrient-deficiency').textContent = data.nutrient_deficiency;
+                //     
+                //     // Update recommendations
+                //     const recommendationsList = document.getElementById('recommendations-list');
+                //     recommendationsList.innerHTML = '';
+                //     data.recommendations.forEach(rec => {
+                //         const li = document.createElement('li');
+                //         li.textContent = rec;
+                //         recommendationsList.appendChild(li);
+                //     });
+                //     
+                //     // Show analysis result
+                //     document.getElementById('analysis-result').classList.add('active');
+                //     
+                //     // Reset button
+                //     analyzeBtn.innerHTML = '<i class="fas fa-chart-line"></i><span>Analyze Selected Zone</span>';
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     analyzeBtn.innerHTML = '<i class="fas fa-chart-line"></i><span>Analyze Selected Zone</span>';
+                // });
+            }, 1500);
+        }
+        
+        // List Product Button Click
+        const listProductBtn = document.getElementById('list-product-btn');
+        listProductBtn.addEventListener('click', () => {
+            // Switch to Add Product tab and pre-fill some fields
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            document.querySelector('[data-tab="add-product"]').classList.add('active');
+            document.getElementById('add-product-tab').classList.add('active');
+            
+            // Pre-fill zone selection
+            if (selectedAnalyzeZoneId) {
+                zoneBoxes.forEach(box => {
+                    if (box.getAttribute('data-zone-id') === selectedAnalyzeZoneId) {
+                        box.click();
+                    }
+                });
+                
+                // Pre-fill quality score
+                const healthScore = parseFloat(document.getElementById('health-score').textContent);
+                document.getElementById('product-quality').value = healthScore;
+                
+                // Set harvest date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('product-harvest-date').value = today;
+            }
+        });
+        
+        // Order Status Update Buttons
+        const confirmOrderBtns = document.querySelectorAll('.confirm-order-btn');
+        const cancelOrderBtns = document.querySelectorAll('.cancel-order-btn');
+        const shipOrderBtns = document.querySelectorAll('.ship-order-btn');
+        const deliverOrderBtns = document.querySelectorAll('.deliver-order-btn');
+        
+        confirmOrderBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const orderId = btn.getAttribute('data-order-id');
+                updateOrderStatus(orderId, 'confirmed');
+            });
+        });
+        
+        cancelOrderBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const orderId = btn.getAttribute('data-order-id');
+                updateOrderStatus(orderId, 'cancelled');
+            });
+        });
+        
+        shipOrderBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const orderId = btn.getAttribute('data-order-id');
+                updateOrderStatus(orderId, 'shipped');
+            });
+        });
+        
+        deliverOrderBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const orderId = btn.getAttribute('data-order-id');
+                updateOrderStatus(orderId, 'delivered');
+            });
+        });
+        
+        function updateOrderStatus(orderId, status) {
+            // In a real application, this would be an AJAX call to the server
+            // For demo purposes, we'll simulate a response
+            
+            // Show loading state
+            const btn = document.querySelector(`[data-order-id="${orderId}"]`);
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Updating...</span>';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // In a real application, you would make an AJAX call to the server
+                // fetch('/api/update-order-status', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ order_id: orderId, status: status }),
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     // Reload the page to show updated status
+                //     window.location.reload();
+                // })
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     btn.innerHTML = originalHtml;
+                // });
+                
+                // For demo, just reload the page
+                alert(`Order #${orderId} has been ${status}.`);
+                window.location.reload();
+            }, 1000);
+        }
+        
+        // Product Edit and Delete Buttons
+        const editProductBtns = document.querySelectorAll('.edit-product-btn');
+        const deleteProductBtns = document.querySelectorAll('.delete-product-btn');
+        
+        editProductBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const productId = btn.getAttribute('data-product-id');
+                alert(`Edit product with ID: ${productId}`);
+                // In a real application, this would redirect to an edit page or open a modal
+            });
+        });
+        
+        deleteProductBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const productId = btn.getAttribute('data-product-id');
+                if (confirm('Are you sure you want to delete this product?')) {
+                    // In a real application, this would be an AJAX call to the server
+                    alert(`Product with ID: ${productId} has been deleted.`);
+                    // Reload the page or remove the product card from the DOM
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

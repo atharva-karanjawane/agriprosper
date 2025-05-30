@@ -150,6 +150,15 @@ def profile():
 
     return render_template('profile.html', username=username, phoneno=phoneno, location=location, email=email, bio=bio)
 
+@app.route('/marketplace-farmer')
+def marketplace_farmer():
+    username = session['name']
+    return render_template("marketplace_farmer.html",username=username)
+
+@app.route('/marketplace-user')
+def marketplace_user():
+    username = session['name']
+    return render_template("marketplace_consumer.html",username=username)
 
 @app.route('/logout')
 def logout():
