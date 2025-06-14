@@ -181,7 +181,7 @@ class QualityPredictionOutput(BaseModel):
 
 
 app = FastAPI(
-    title="Plant Disease Detection API",
+    title="Agri Prosper AI Server",
     description="API for detecting diseases in plant images and predicting crop yields",
     version="1.0.0",
     docs_url="/",
